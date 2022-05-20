@@ -1,0 +1,96 @@
+{% extends "base.html"}
+
+{% block content %}
+
+<head>
+    <title>Hikerz</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="./../static/style.css">
+</head>
+
+<body>
+
+    <!-- nur fuer testzwecke -->
+    <div class="container-fluid">
+
+        <h1 align="center"> Alle Touren auf einen Blick </h1>
+
+        <!-- Alle Touren werden angezeigt -->
+        <div class="row">
+            
+            <!-- Aufbau einer Touranzeige: Vorschaubild mit Zentrierter Tourbezeichnung -->
+            <!-- Hierfuer wurden Klassen in der css-Datei angelegt -->
+            <div class="post col-md">
+                <img src="./../static/vorschaubilder/bild1.jpeg">  
+                <div class="post-s col-md">
+                    <h2>Tour 1</h2>
+                </div>
+            </div>
+            <div class="post col-md">
+                <img src="./../static/vorschaubilder/bild2.jpeg">  
+                <div class="post-s col-md">
+                    <h2>Tour 2</h2>
+                </div>
+            </div>
+            <div class="post col-md">
+                <img src="./../static/vorschaubilder/bild3.jpeg">  
+                <div class="post-s col-md">
+                    <h2>Tour 3</h2>
+                </div>
+            </div>
+            <div class="post col-md">
+                <img src="./../static/vorschaubilder/bild4.jpeg">  
+                <div class="post-s col-md">
+                    <h2>Tour 4</h2>
+                </div>
+            </div>
+            <div class="post col-md">
+                <img src="./../static/vorschaubilder/bild5.jpeg">  
+                <div class="post-s col-md">
+                    <h2>Tour 5</h2>
+                </div>
+            </div>
+            <div class="post col-md">
+                <img src="./../static/vorschaubilder/bild6.jpeg">  
+                <div class="post-s col-md">
+                    <h2>Tour 6</h2>
+                </div>
+            </div>
+            <div class="post col-md">
+                <img src="./../static/vorschaubilder/bild7.jpeg">  
+                <div class="post-s col-md">
+                    <h2>Tour 7</h2>
+                </div>
+            </div>
+            <div class="post col-md">
+                <img src="./../static/vorschaubilder/bild8.jpeg">  
+                <div class="post-s col-md">
+                    <h2>Tour 8</h2>
+                </div>
+            </div>
+            <div class="post col-md">
+                <img src="./../static/vorschaubilder/bild9.jpeg">  
+                <div class="post-s col-md">
+                    <h2>Tour 9</h2>
+                </div>
+            </div>
+        
+        </div>
+
+        
+
+
+    </div>
+
+
+</body>
+
+
+
+
+
+{% end block %}
