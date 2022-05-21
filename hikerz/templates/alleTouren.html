@@ -1,4 +1,4 @@
-{% extends "base.html"}
+{% extends "base.html" %}
 
 {% block content %}
 
@@ -21,68 +21,21 @@
         <h1 align="center"> Alle Touren auf einen Blick </h1>
 
         <!-- Alle Touren werden angezeigt -->
+
         <div class="row">
-            
-            <!-- Aufbau einer Touranzeige: Vorschaubild mit Zentrierter Tourbezeichnung -->
-            <!-- Hierfuer wurden Klassen in der css-Datei angelegt -->
-            <div class="post col-md">
-                <img src="./../static/vorschaubilder/bild1.jpeg">  
-                <div class="post-s col-md">
-                    <h2>Tour 1</h2>
+            {% for t in touren %}
+                <div class="post col-md">
+                    <img src="./../static/vorschaubilder/{{ touren[t] }}">  
+                    <div class="post-s col-md">
+                        <h2>{{ t }}</h2>
+                    </div>
                 </div>
-            </div>
-            <div class="post col-md">
-                <img src="./../static/vorschaubilder/bild2.jpeg">  
-                <div class="post-s col-md">
-                    <h2>Tour 2</h2>
-                </div>
-            </div>
-            <div class="post col-md">
-                <img src="./../static/vorschaubilder/bild3.jpeg">  
-                <div class="post-s col-md">
-                    <h2>Tour 3</h2>
-                </div>
-            </div>
-            <div class="post col-md">
-                <img src="./../static/vorschaubilder/bild4.jpeg">  
-                <div class="post-s col-md">
-                    <h2>Tour 4</h2>
-                </div>
-            </div>
-            <div class="post col-md">
-                <img src="./../static/vorschaubilder/bild5.jpeg">  
-                <div class="post-s col-md">
-                    <h2>Tour 5</h2>
-                </div>
-            </div>
-            <div class="post col-md">
-                <img src="./../static/vorschaubilder/bild6.jpeg">  
-                <div class="post-s col-md">
-                    <h2>Tour 6</h2>
-                </div>
-            </div>
-            <div class="post col-md">
-                <img src="./../static/vorschaubilder/bild7.jpeg">  
-                <div class="post-s col-md">
-                    <h2>Tour 7</h2>
-                </div>
-            </div>
-            <div class="post col-md">
-                <img src="./../static/vorschaubilder/bild8.jpeg">  
-                <div class="post-s col-md">
-                    <h2>Tour 8</h2>
-                </div>
-            </div>
-            <div class="post col-md">
-                <img src="./../static/vorschaubilder/bild9.jpeg">  
-                <div class="post-s col-md">
-                    <h2>Tour 9</h2>
-                </div>
-            </div>
-        
+
+            {% endfor %}
         </div>
 
-        
+
+
     <!--
     </div>
 
@@ -93,4 +46,4 @@
 
 
 
-{% end block %}
+{% endblock %}

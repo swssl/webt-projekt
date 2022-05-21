@@ -6,6 +6,15 @@ db = SQLAlchemy()
 
 # In dieser Datei liegen die Datenbankklassen
 
+class User(db.Model):
+    __tablename__ = 'User'
+
+    username = db.Column(db.String(45), primary_key=True)
+    emailAdresse = db.Column(db.String(45), nullable=False, unique=True)
+    password = db.Column(db.String(45), nullable=False)
+    rolle = db.Column(db.Integer(),  nullable=False)
+    isLoggedIn = db.Column(db.Boolean, nullable=False, default=False)
+
 class Tour(db.Model):
     __tablename__ = 'Route'
 
