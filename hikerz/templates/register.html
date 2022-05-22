@@ -1,0 +1,92 @@
+{%extends 'base.html'%}
+
+{%block content%}
+
+<div>
+    <div class="row mt-5">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 d-flex justify-content-center">
+            <!-- Hikerz- logo -->
+            <img style="width: 10em;" src="{{url_for('static', filename='img/hikerz_logo.svg')}}">
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 d-flex justify-content-center">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title text-center">
+                        <h1>Konto anlegen</h1>
+                    </div>
+                    <form action="/register" method="post">
+                        <!-- Hidden Field for CSRF-Protection -->
+                        {{ registration_form.csrf_token}}
+                        <div class="row">
+                            <div class="col">
+                                {{registration_form.user_name.label(class="form-label")}}
+                                {{registration_form.user_name(class="form-control")}}
+                            </div>
+                        </div>
+                        <div class="row my-3">
+                            <div class="col">
+                                {{registration_form.email.label(class="form-label")}}
+                                {{registration_form.email(class="form-control")}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                {{registration_form.password.label(class="form-label")}}
+                                {{registration_form.password(class="form-control")}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                {{registration_form.confirm_password.label(class="form-label")}}
+                                {{registration_form.confirm_password(class="form-control")}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mt-3">
+                                <div class="p-1 border boder-dark border-3">
+                                    <div class="row">
+                                        <div class="form-check col-auto">
+                                            <div class="mx-3">
+                                                {{registration_form.captcha(class="form-check-input")}}
+                                                {{registration_form.captcha.label(class="form-check-label")}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <!-- If there Forms validate()-Function found any errors, render them as Bootstrap-alerts: -->
+                            {% if registration_form.errors != {} and request.method != "GET" %}
+                            {% for field, msg in registration_form.errors.items() %}
+                            <div class="alert alert-danger" role="alert">{{ msg[0] }}</div>
+                            {% endfor %}
+                            {% endif %}
+                            <div class="col text-center">
+                                {{ registration_form.submit(class="btn", style="background-color: var(--farbe2)") }}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 d-flex justify-content-center mt-2">
+            <div class="text-secondary" style="font-size: 0.8em">
+                <div>
+                    Du hast schon ein Konto? <a class="link-secondary" href="/login">Jetzt anmelden</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{%endblock%}
