@@ -22,9 +22,11 @@
 
         <!-- Inhaltsverzeichnis -->
 
-        <h2><a href="#user">Benutzer</a></h2>                  
+        <h2><a href="#user">Zur Übersicht über alle Benutzer</a></h2>                  
         
-        <h2><a href="#touren">Touren</a></h2>
+        <h2><a href="#routen">Zur Übersicht über alle Routen</a></h2>
+
+        <p><br></p>
 
         <!-- Inhalt der Seite sortiert -->
 
@@ -57,19 +59,34 @@
             </tbody>
         </table>
                 
-        <h3><a name="touren"/>Übersicht über alle Touren</h3>
+        <h3><a name="routen"/>Übersicht über alle Routen</h3>
         
-        <ul>
-            <li>
-                <p>Tour 1</p>
-            </li>
-            <li>
-                <p>Tour 2</p>
-            </li>
-            <li>
-                <p>Tour 3</p>
-            </li>
-        </ul>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Beschreibung</th>
+                    <th scope="col">Weg</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in allUsers %}
+                    <tr>
+                        <th scope="row">{{ allUsers[u][1] }}</th>
+                        <td>{{ allUsers[u][0] }}</td>
+                        <td>{{ allUsers[u][2] }}</td>
+                        <td>
+                            <ul class="list inline m-0">
+                                <li class="list-inline-item">
+                                    <img src="./../static/ButtonPictures/deleteicon.png" width="20" height="20" data-bs-toggle="tooltip" data-bs-placement="top" title data-bs-original-title="Delete">
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                {% endfor %}                
+            </tbody>
+        </table>
 
 
     <!--

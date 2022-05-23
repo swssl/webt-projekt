@@ -36,9 +36,9 @@ def routeOverview():
     return render_template('alleTouren.html', touren=touren)
 
 
-@views.route('/routeoverview')
-def routeOverview():
-    allUsers = {"username":["Test1","Test2","Test3","Test4"], "email":["1@1.de","2@2.de","3@3.de","4@4.de"], "rolle":["admin","user","user","user"]}
+@views.route('/adminbereich')
+def adminbereich():
+    test_user = User("admin", "admin@localhost.org", "admin", 0)
     allUsers = {"user1":["Test1","1@1.de","admin"], "user2":["Test2","2@2.de","user"],"user3":["Test3","3@3.de","user"],"user4":["Test4","4@4.de","user"],"user5":["Test5","5@5.de","user"],"user6":["Test6","6@6.de","user"],"user7":["Test7","7@7.de","user"],"user8":["Test8","8@8.de","user"],"user9":["Test9","9@9.de","user"],"user10":["Test10","10@10.de","user"]}
-    return render_template("adminArea.html", allUsers=allUsers)
+    return render_template("adminArea.html", allUsers=allUsers, test_user=test_user)
 
