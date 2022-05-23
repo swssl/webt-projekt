@@ -46,7 +46,9 @@ def routeOverview():
     touren["Tour8"] = Route("Route8","Dies ist Route 8", "Weg", "bild8.jpeg", 1, 1, 20)
     touren["Tour9"] = Route("Route9","Dies ist Route 9", "Weg", "bild9.jpeg", 1, 1, 20)"""
 
-    return render_template('alleTouren.html', touren=touren, test_user=test_user)
+    nums= [i for i in range(4)]
+
+    return render_template('alleTouren.html', touren=touren, test_user=test_user, nums=nums)
 
 @views.route('/testRoute')
 def testRoute():
