@@ -18,19 +18,9 @@
 
     <div class="container-fluid">
         -->
-        <h1 align="center"> Administrator Bereich </h1>
-
-        <!-- Inhaltsverzeichnis -->
-
-        <h2><a href="#user">Zur Übersicht über alle Benutzer</a></h2>                  
-        
-        <h2><a href="#routen">Zur Übersicht über alle Routen</a></h2>
+        <h1 align="center"> Übersicht über alle registrierten Benutzer </h1>
 
         <p><br></p>
-
-        <!-- Inhalt der Seite sortiert -->
-
-        <h3><a name="user"/>Übersicht über alle Registierten Benuter</h3>
 
         <table class="table table-striped">
             <thead>
@@ -58,43 +48,11 @@
                 {% endfor %}                
             </tbody>
         </table>
+
+        <script src="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.js">
+            $(document).ready(function(){$('#allUserTable').DataTable();});
+        </script>
                 
-        <h3><a name="routen"/>Übersicht über alle Routen</h3>
-        
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Beschreibung</th>
-                    <th scope="col">Weg</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for u in allUsers %}
-                    <tr>
-                        <th scope="row">{{ allUsers[u][1] }}</th>
-                        <td>{{ allUsers[u][0] }}</td>
-                        <td>{{ allUsers[u][2] }}</td>
-                        <td>
-                            <ul class="list inline m-0">
-                                <li class="list-inline-item">
-                                    <img src="./../static/ButtonPictures/deleteicon.png" width="20" height="20" data-bs-toggle="tooltip" data-bs-placement="top" title data-bs-original-title="Delete">
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
-                {% endfor %}                
-            </tbody>
-        </table>
-
-
-    <!--
-    </div>
-
-
-</body>
--->
 
 
 
