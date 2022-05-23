@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, request
-from db import User
-from forms import *
+from .db import User
+from .forms import *
+
 
 # Hier stehen die URL-Endpunkte/Routes
 
@@ -34,16 +35,10 @@ def routeOverview():
 
     return render_template('alleTouren.html', touren=touren)
 
-from flask import Flask
 
-app = Flask(__name__)
-
-#@views.route('/routeoverview')
-@app.route("/adminBereich")
+@views.route('/routeoverview')
 def routeOverview():
     allUsers = {"username":["Test1","Test2","Test3","Test4"], "email":["1@1.de","2@2.de","3@3.de","4@4.de"], "rolle":["admin","user","user","user"]}
     allUsers = {"user1":["Test1","1@1.de","admin"], "user2":["Test2","2@2.de","user"],"user3":["Test3","3@3.de","user"],"user4":["Test4","4@4.de","user"],"user5":["Test5","5@5.de","user"],"user6":["Test6","6@6.de","user"],"user7":["Test7","7@7.de","user"],"user8":["Test8","8@8.de","user"],"user9":["Test9","9@9.de","user"],"user10":["Test10","10@10.de","user"]}
     return render_template("adminArea.html", allUsers=allUsers)
 
-if __name__ == "__main__":
-    app.run()

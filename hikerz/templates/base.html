@@ -21,9 +21,9 @@
                 <h5 class="dropdown" style="font-weight: bold;"><a href="#" style="color:black"
                         class="nav-link dropdown-toggle p-0" id="dropdown" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        test_user.username</a>
+                        {{test_user.username}}</a>
                     <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdown">
-                        <li><a class="dropdown-item" href="/profil/test_user.username">Profil</a></li>
+                        <li><a class="dropdown-item" href="/profil/{{test_user.username}}">Profil</a></li>
 
                         <li>
                             <hr class="dropdown-divider">
@@ -31,7 +31,7 @@
                         <li><a class="dropdown-item" href="/logout">Abmelden</a></li>
                     </ul>
                 </h5>
-                <h6 style="color: grey;">test_user.rolle</h6>
+                <h6 style="color: grey;">{{test_user.rolle}}</h6>
             </div>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -44,7 +44,7 @@
                 </li>
                 <!-- TODO: In dieser Liste stehen die Einträge der Seitenleiste -->
                 <li class="nav-item">
-                    <a href="/profil/test_user.username" class="nav-link text-truncate">
+                    <a href="/profil/{{test_user.username}}" class="nav-link text-truncate">
                         <i class="fs-5 bi-house">Mein Konto</i>
                     </a>
                 </li>
@@ -63,8 +63,7 @@
 
     <!-- Content-Block -->
     <div class="container-fluid">
-        {%block content%}
-        {%endblock%}
+        {%block content%}{%endblock%}
     </div>
 
     <!-- Navigattionselemente am Boden der Seite -->
@@ -92,4 +91,5 @@
         crossorigin="anonymous"></script>
 </body>
 
-</html> 
+
+</html>
