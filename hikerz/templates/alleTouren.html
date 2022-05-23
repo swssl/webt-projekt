@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- nur fuer testzwecke -->
+<!--
+<head>
+    <title>Hikerz</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="./../static/style.css">
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        -->
+        <h1 align="center"> Alle Touren auf einen Blick </h1>
+
+        <!-- Alle Touren werden angezeigt -->
+
+        <div class="row">
+            {% for t in touren %}
+                <div class="post col-md">
+                    <img src="./../static/vorschaubilder/{{ touren[t] }}">  
+                    <div class="post-s col-md">
+                        <h2>{{ t }}</h2>
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+
+
+
+    <!--
+    </div>
+
+
+</body>
+-->
+
+
+
+
+{% endblock %}
