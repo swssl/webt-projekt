@@ -33,4 +33,10 @@ def routeOverview():
     touren["Tour8"] = "bild8.jpeg"
     touren["Tour9"] = "bild9.jpeg"
 
-    return render_template('alleTouren.html', touren=touren)
+    test_user = User("admin", "admin@localhost.org", "admin", 0)
+
+    return render_template('alleTouren.html', touren=touren, test_user=test_user)
+
+@views.route('/testRoute')
+def testRoute():
+    return "<h1>Testseite</h1>"
