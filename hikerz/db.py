@@ -1,4 +1,3 @@
-from enum import unique
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -15,19 +14,26 @@ class User(db.Model):
     rolle = db.Column(db.Integer(),  nullable=False)
     isLoggedIn = db.Column(db.Boolean, nullable=False, default=False)
 
-class Tour(db.Model):
-    __tablename__ = 'Route'
+    def __init__(self, username, emailAdresse, password, rolle) -> None:
+        super().__init__()
+        self.username = username
+        self.emailAdresse = emailAdresse
+        self.password = password
+        self.rolle = rolle
+        self.isLoggedIn = False
 
-    routenID = db.Column(db.String(45), primary_key=True, unique=True)
-    bezeichnung = db.Column(db.String(45), nullable=False)
-    weg = db.Column(db.String(45), nullable=False)
-    vorschaubild = db.Column(db.String(45),  nullable=False)
+    def is_active(self):
+        return True
 
-class Highlight(db.Model):
-    __tablename__ = 'HighlightInRoute'
+    def is_authenticated(self):
+        return self.isLoggedIn
 
-    routenID = db.Column(db.String(45), primary_key=True)
-    highlights = db.Column(db.String(45), nullable=False, unique=True)
-    password = db.Column(db.String(45), nullable=False)
-    rolle = db.Column(db.Integer(),  nullable=False)
-    isLoggedIn = db.Column(db.Boolean, nullable=False, default=False)
+    def is_anonymous(self):
+        return False
+    
+    def get_id(self):
+        return self.username
+
+    def __repr__(self):
+        return f"<User {self.benutzername} {self.username}>"
+   

@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, request
-from db import User
-from forms import *
+from .db import User
+from .forms import *
+
 
 # Hier stehen die URL-Endpunkte/Routes
 
@@ -33,4 +34,3 @@ def routeOverview():
     touren["Tour9"] = "bild9.jpeg"
 
     return render_template('alleTouren.html', touren=touren)
-
