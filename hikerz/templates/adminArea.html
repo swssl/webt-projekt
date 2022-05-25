@@ -2,59 +2,51 @@
 
 {% block content %}
 
-<!-- nur fuer testzwecke -->
-<!--
-<head>
-    <title>Hikerz</title>
-    <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    <link rel="stylesheet" href="./../static/style.css">
-</head>
+    <h1 align="center"> Übersicht über alle registrierten Benutzer </h1>
 
-<body>
+    <p><br></p>
 
-    <div class="container-fluid">
-        -->
-        <h1 align="center"> Übersicht über alle registrierten Benutzer </h1>
-
-        <p><br></p>
-
-        <table class="table table-striped">
-            <thead>
+    <table id="example" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th scope="col">Email-Adresse</th>
+                <th scope="col">Benutzername</th>
+                <th scope="col">Rolle</th>
+                <th scope="col">Aktion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in allUsers %}
                 <tr>
-                    <th scope="col">Email-Adresse</th>
-                    <th scope="col">Benutzername</th>
-                    <th scope="col">Rolle</th>
-                    <th scope="col">Aktion</th>
+                    <th scope="row">{{ allUsers[u][1] }}</th>
+                    <td>{{ allUsers[u][0] }}</td>
+                    <td>{{ allUsers[u][2] }}</td>
+                    <td>
+                        <ul class="list inline m-0">
+                            <li class="list-inline-item">
+                                <img src="./../static/ButtonPictures/deleteicon.png" width="20" height="20" data-bs-toggle="tooltip" data-bs-placement="top" title data-bs-original-title="Delete">
+                            </li>
+                        </ul>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                {% for u in allUsers %}
-                    <tr>
-                        <th scope="row">{{ allUsers[u][1] }}</th>
-                        <td>{{ allUsers[u][0] }}</td>
-                        <td>{{ allUsers[u][2] }}</td>
-                        <td>
-                            <ul class="list inline m-0">
-                                <li class="list-inline-item">
-                                    <img src="./../static/ButtonPictures/deleteicon.png" width="20" height="20" data-bs-toggle="tooltip" data-bs-placement="top" title data-bs-original-title="Delete">
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
-                {% endfor %}                
-            </tbody>
-        </table>
-
-        <script src="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.js">
-            $(document).ready(function(){$('#allUserTable').DataTable();});
-        </script>
-                
+            {% endfor %}                
+        </tbody>
+    </table>
 
 
 
+{% endblock %}
 
+
+{% block scripts %}
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+
+<script>
+    
+    $(document).ready(function () {
+    $('#example').DataTable();
+    });
+  </script>
 {% endblock %}
