@@ -22,18 +22,19 @@
 
         <!-- Alle Touren werden angezeigt -->
 
-        <div class="row">
+        <div class="row gx-5">
+
             {% for t in touren %}
-                <div class="post col-md">
-                    <img src="./../static/vorschaubilder/{{ touren[t] }}">  
-                    <div class="post-s col-md">
-                        <h2>{{ t }}</h2>
+            
+                <div class="card bg-dark text-white col-md-4 p-3 border bg-light">
+                    <div class="card-header"><h3>Tour Titel</h3></div>
+                    <img class="card-img" src="./../static/vorschaubilder/{{ touren[t] }}" alt="Card image">
+                    <div class="card-footer">
+                        <a href="/testRoute" class="btn btn-primary stretched-link">Mehr Details</a>
                     </div>
-                </div>
+                  </div>
 
             {% endfor %}
-        </div>
-
 
 
     <!--
