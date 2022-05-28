@@ -15,3 +15,10 @@
 .nav-link:hover{
     color: var(--farbe1);
 }
+
+.card-img{
+    max-width:100%;
+    height: auto;
+    max-height: 250px;
+    width: auto;
+}
