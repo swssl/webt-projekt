@@ -24,7 +24,7 @@
                     <td>
                         <ul class="list inline m-0">
                             <li class="list-inline-item">
-                                <img src="./../static/ButtonPictures/deleteicon.png" width="20" height="20" data-bs-toggle="tooltip" data-bs-placement="top" title data-bs-original-title="Delete">
+                                <button class="btn" data-toggle="tooltip" data-placement="top" title="Benutzer löschen" onclick="window.location.href = '/benutzerLoeschen//{{ allUsers[u][0] }}';"><i class="fa fa-trash"></i></button>                                                    
                             </li>
                         </ul>
                     </td>
@@ -48,5 +48,11 @@
     $(document).ready(function () {
     $('#example').DataTable();
     });
-  </script>
+
+    $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();   
+    });
+
+</script>
+  
 {% endblock %}
