@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1 align="center"> Übersicht über alle registrierten Benutzer </h1>
+
+    <p><br></p>
+
+    <table id="example" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th scope="col">Email-Adresse</th>
+                <th scope="col">Benutzername</th>
+                <th scope="col">Rolle</th>
+                <th scope="col">Aktion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in allUsers %}
+                <tr>
+                    <th scope="row">{{ allUsers[u][1] }}</th>
+                    <td>{{ allUsers[u][0] }}</td>
+                    <td>{{ allUsers[u][2] }}</td>
+                    <td>
+                        <ul class="list inline m-0">
+                            <li class="list-inline-item">
+                                <img src="./../static/ButtonPictures/deleteicon.png" width="20" height="20" data-bs-toggle="tooltip" data-bs-placement="top" title data-bs-original-title="Delete">
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}                
+        </tbody>
+    </table>
+
+
+
+{% endblock %}
+
+
+{% block scripts %}
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+
+<script>
+    
+    $(document).ready(function () {
+    $('#example').DataTable();
+    });
+  </script>
+{% endblock %}

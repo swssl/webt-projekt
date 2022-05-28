@@ -39,7 +39,6 @@ class User(db.Model):
     def __repr__(self):
         return f"<User {self.benutzername} {self.username}>"
 
-
 class Route(db.Model):
     __tablename__ = 'Route'
 
@@ -173,3 +172,4 @@ class ReviewImage(db.Model):
         super().__init__()
         self.reviewId = reviewId
         self.image = image
+
