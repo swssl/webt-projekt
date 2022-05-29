@@ -25,9 +25,9 @@
                 <h5 class="dropdown" style="font-weight: bold;"><a href="#" style="color:black"
                         class="nav-link dropdown-toggle p-0" id="dropdown" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        {{test_user.username}}</a>
+                        {{current_user.username}}</a>
                     <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdown">
-                        <li><a class="dropdown-item" href="/profil/{{test_user.username}}">Profil</a></li>
+                        <li><a class="dropdown-item" href="/profil/{{current_user.username}}">Profil</a></li>
 
                         <li>
                             <hr class="dropdown-divider">
@@ -35,7 +35,7 @@
                         <li><a class="dropdown-item" href="/logout">Abmelden</a></li>
                     </ul>
                 </h5>
-                <h6 style="color: grey;">{{test_user.rolle}}</h6>
+                <h6 style="color: grey;">{{current_user.rolle}}</h6>
             </div>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -48,7 +48,7 @@
                 </li>
                 <!-- TODO: In dieser Liste stehen die Einträge der Seitenleiste -->
                 <li class="nav-item">
-                    <a href="/profil/{{test_user.username}}" class="nav-link text-truncate">
+                    <a href="/profil/{{current_user.username}}" class="nav-link text-truncate">
                         <i class="fs-5 bi-house">Mein Konto</i>
                     </a>
                 </li>
@@ -66,12 +66,12 @@
     </div>
 
     <!-- Content-Block -->
-    <div class="container-fluid">
+    <div class="container-fluid" style="margin-bottom:4em">
         {%block content%}{%endblock%}
     </div>
 
     <!-- Navigattionselemente am Boden der Seite -->
-    <ul class="nav justify-content-center fixed-bottom mb-1">
+    <ul class="nav justify-content-center fixed-bottom" style="background-color:white">
         <li class="nav-item mx-4">
             <button class="btn float-start" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" role="button"
                 style="padding: 0.3em">
@@ -96,6 +96,5 @@
     
     {% block scripts %}{% endblock %}
 </body>
-
 
 </html>

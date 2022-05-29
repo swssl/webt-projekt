@@ -14,7 +14,6 @@ class User(db.Model):
     emailAdresse = db.Column(db.String(45), nullable=False, unique=True)
     password = db.Column(db.String(45), nullable=False)
     rolle = db.Column(db.Integer(),  nullable=False)
-    isLoggedIn = db.Column(db.Boolean, nullable=False, default=False)
 
     def __init__(self, username, emailAdresse, password, rolle) -> None:
         super().__init__()
@@ -22,13 +21,12 @@ class User(db.Model):
         self.emailAdresse = emailAdresse
         self.password = password
         self.rolle = rolle
-        self.isLoggedIn = False
 
     def is_active(self):
         return True
 
     def is_authenticated(self):
-        return self.isLoggedIn
+        return True
 
     def is_anonymous(self):
         return False
@@ -37,7 +35,8 @@ class User(db.Model):
         return self.username
 
     def __repr__(self):
-        return f"<User {self.benutzername} {self.username}>"
+        return f"<User {self.username}>"
+
 
 class Route(db.Model):
     __tablename__ = 'Route'
@@ -172,4 +171,5 @@ class ReviewImage(db.Model):
         super().__init__()
         self.reviewId = reviewId
         self.image = image
+
 

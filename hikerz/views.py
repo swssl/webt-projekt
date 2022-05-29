@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, request
-from .db import User
+from flask_login import current_user, login_required, login_user, logout_user
+from .db import *
 from .forms import *
 
 
@@ -9,13 +10,37 @@ views = Blueprint("views", __name__, template_folder="templates")
 
 @views.route('/hello')
 def index():
-    test_user = User("admin", "admin@localhost.org", "admin", 0)
-    return render_template('base.html', test_user = test_user)
+    return render_template('base.html')
 
-@views.route('/login')
+@views.route('/login', methods=['GET', 'POST'])
 def login():
-    test_user = User("admin", "admin@localhost.org", "admin", 0)
-    return render_template('login.html', test_user=test_user) 
+    if current_user.is_authenticated:  # redirect to home if user is already logged in
+        return redirect("hello")
+    form = LoginForm()
+    if form.validate_on_submit():  # if valid data ist send by POST:
+        user = User.query.get(form.data['user_name'])  # query user from db
+        login_user(user)
+        return redirect("hello")
+    return render_template('login.html', login_form=form)
+
+@views.route('/register', methods=["GET", "POST"])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        new_user = User(form.data['user_name'],
+                        form.data["email"], form.data["password"], 1) # create new user
+        db.session.add(new_user)
+        db.session.commit()     # write new user to db
+        return redirect("login")
+    return render_template('register.html', registration_form=form)
+
+@views.route('/logout')
+@login_required
+def logout():
+    if current_user.is_authenticated:
+        logout_user()
+    return redirect("login")
+ return render_template('login.html', test_user=test_user) 
 
 
 @views.route('/routeoverview')
@@ -60,5 +85,4 @@ def adminbereich():
     test_user = User("admin", "admin@localhost.org", "admin", 0)
     allUsers = {"user1":["Test1","1@1.de","admin"], "user2":["Test2","2@2.de","user"],"user3":["Test3","3@3.de","user"],"user4":["Test4","4@4.de","user"],"user5":["Test5","5@5.de","user"],"user6":["Test6","6@6.de","user"],"user7":["Test7","7@7.de","user"],"user8":["Test8","8@8.de","user"],"user9":["Test9","9@9.de","user"],"user10":["Test10","10@10.de","user"],"user11":["Test11","11@11.de","admin"], "user12":["Test12","12@12.de","user"],"user13":["Test13","13@13.de","user"],"user14":["Test14","14@41.de","user"],"user15":["Test15","15@51.de","user"],"user16":["Test16","16@16.de","user"],"user17":["Test17","71@17.de","user"],"user8":["Test18","18@18.de","user"],"user19":["Test19","91@19.de","user"],"user20":["Test20","20@20.de","user"]}
     return render_template("adminArea.html", allUsers=allUsers, test_user=test_user)
-
 
