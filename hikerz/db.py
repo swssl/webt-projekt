@@ -41,7 +41,7 @@ class User(db.Model):
 class Route(db.Model):
     __tablename__ = 'Route'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(45), nullable=False, default='Neue Route')
     description = db.Column(db.String(1024), nullable=False)
     trail = db.Column(db.String(45), nullable=False) # TODO: check what the correct data type is
@@ -67,13 +67,13 @@ class Route(db.Model):
 class Highlight(db.Model):
     __tablename__ = 'Highlight'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(45), nullable=False, default='Neues Highlight')
     description = db.Column(db.String(1024), nullable=True)
     coordinates = db.Column(db.String(64), nullable=False) # TODO: check how to best store coordinates
     previewImage = db.Column(db.String(255), nullable=False, default='PathToDefaultImage')
     highlightInRoute = db.relationship('HighlightInRoute', back_populates='highlight')
-    highlightImage = db.relationship('HighlighImage', back_populates='highlight')
+    highlightImage = db.relationship('HighlightImage', back_populates='highlight')
 
     def __init__(self, name, description, coordinates, previewImage) -> None:
         super().__init__()
@@ -83,14 +83,13 @@ class Highlight(db.Model):
         self.previewImage = previewImage
 
 
-
 class HighlightInRoute(db.Model):
     __tablename__ = 'HighlightInRoute'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
-    routeId = db.Column(db.Integer(), db.ForeignKey('route.id'))
+    id = db.Column(db.Integer(), primary_key=True)
+    routeId = db.Column(db.Integer(), db.ForeignKey('Route.id'))
     route = db.relationship('Route', back_populates='highlightInRoute')
-    highlightId = db.Column(db.Integer(), db.ForeignKey('highlight.id'))
+    highlightId = db.Column(db.Integer(), db.ForeignKey('Highlight.id'))
     highlight = db.relationship('Highlight', back_populates='highlightInRoute')
 
     def __init__(self, routeId, highlightId) -> None:
@@ -102,8 +101,8 @@ class HighlightInRoute(db.Model):
 class RouteImage(db.Model):
     __tablename__ = 'RouteImages'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
-    routeId = db.Column(db.Integer(), db.ForeignKey('route.id'))
+    id = db.Column(db.Integer(), primary_key=True)
+    routeId = db.Column(db.Integer(), db.ForeignKey('Route.id'))
     route = db.relationship('Route', back_populates='routeImage')
     image = db.Column(db.String(255), nullable=False)
 
@@ -116,8 +115,8 @@ class RouteImage(db.Model):
 class HighlightImage(db.Model):
     __tablename__ = 'HighlightImage'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
-    highlightId = db.Column(db.Integer(), db.ForeignKey('highlight.id'))
+    id = db.Column(db.Integer(), primary_key=True)
+    highlightId = db.Column(db.Integer(), db.ForeignKey('Highlight.id'))
     highlight = db.relationship('Highlight', back_populates='highlightImage')
     image = db.Column(db.String(255), nullable=False)
 
@@ -130,9 +129,9 @@ class HighlightImage(db.Model):
 class TagOfRoute(db.Model):
     __tablename__ = 'TagOfRoute'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer(), primary_key=True)
     tag = db.Column(db.String(45), nullable=False, default='Default Tag')
-    routeId = db.Column(db.Integer(), db.ForeignKey('route.id'))
+    routeId = db.Column(db.Integer(), db.ForeignKey('Route.id'))
     route = db.relationship('Route', back_populates='tagOfRoute')
 
     def __init__(self, tag, routeId) -> None:
@@ -144,7 +143,7 @@ class TagOfRoute(db.Model):
 class Review(db.Model):
     __tablename__ = 'Review'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer(), primary_key=True)
     topic = db.Column(db.String(45), nullable=False)
     review = db.Column(db.String(1024), nullable=False)
     rating = db.Column(db.Integer(), nullable=False) # 1-10
@@ -162,8 +161,8 @@ class Review(db.Model):
 class ReviewImage(db.Model):
     __tablename__ = 'ReviewImage'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
-    reviewId = db.Column(db.Integer(), db.ForeignKey('review.id'))
+    id = db.Column(db.Integer(), primary_key=True)
+    reviewId = db.Column(db.Integer(), db.ForeignKey('Review.id'))
     review = db.relationship('Review', back_populates='reviewImage')
     image = db.Column(db.String(255), nullable=False)
 
@@ -171,5 +170,3 @@ class ReviewImage(db.Model):
         super().__init__()
         self.reviewId = reviewId
         self.image = image
-
-

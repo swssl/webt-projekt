@@ -39,8 +39,8 @@ def register():
 def logout():
     if current_user.is_authenticated:
         logout_user()
-    return redirect("login")
- return render_template('login.html', test_user=test_user) 
+        return redirect("login")
+    return render_template('login.html', test_user=test_user) 
 
 
 @views.route('/routeoverview')
