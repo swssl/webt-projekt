@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import null, nullslast
 
 db = SQLAlchemy()
+#db.create_all()
 
 
 # In dieser Datei liegen die Datenbankklassen
@@ -43,7 +44,7 @@ class User(db.Model):
 class Route(db.Model):
     __tablename__ = 'Route'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(45), nullable=False, default='Neue Route')
     description = db.Column(db.String(1024), nullable=False)
     trail = db.Column(db.String(45), nullable=False) # TODO: check what the correct data type is
@@ -65,11 +66,21 @@ class Route(db.Model):
         self.stamina = stamina
         self.duration = duration
 
+    def __repr__(self):
+        return f'<Route \
+            "name" {self.name}, \
+            "description" {self.description}, \
+            "trail" {self.trail}, \
+            "previewImage" {self.previewImage}, \
+            "technicalDifficulty" {self.technicalDifficulty}, \
+            "stamina" {self.stamina}, \
+            "duration" {self.duration}>'
+
 
 class Highlight(db.Model):
     __tablename__ = 'Highlight'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(45), nullable=False, default='Neues Highlight')
     description = db.Column(db.String(1024), nullable=True)
     coordinates = db.Column(db.String(64), nullable=False) # TODO: check how to best store coordinates
@@ -84,12 +95,18 @@ class Highlight(db.Model):
         self.coordinates = coordinates
         self.previewImage = previewImage
 
+    def __repr__(self) -> str:
+        return f'<Highlight \
+        "name" {self.name}, \
+        "description" {self.description}, \
+        "coordinates" {self.coordinates}, \
+        "previewImage" {self.previewImage}>'
 
 
 class HighlightInRoute(db.Model):
     __tablename__ = 'HighlightInRoute'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer(), primary_key=True)
     routeId = db.Column(db.Integer(), db.ForeignKey('route.id'))
     route = db.relationship('Route', back_populates='highlightInRoute')
     highlightId = db.Column(db.Integer(), db.ForeignKey('highlight.id'))
@@ -100,11 +117,15 @@ class HighlightInRoute(db.Model):
         self.routeId = routeId
         self.highlightId = highlightId
 
+    def __repr__(self) -> str:
+        return f'<HighlightInRoute \
+            "routeId" {self.routeId}, \
+            "highlightId" {self.highlightId}>'
 
 class RouteImage(db.Model):
     __tablename__ = 'RouteImages'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer(), primary_key=True)
     routeId = db.Column(db.Integer(), db.ForeignKey('route.id'))
     route = db.relationship('Route', back_populates='routeImage')
     image = db.Column(db.String(255), nullable=False)
@@ -113,12 +134,17 @@ class RouteImage(db.Model):
         super().__init__()
         self.routeId = routeId
         self.image = image
+    
+    def __repr__(self) -> str:
+        return f'<RouteImage \
+            "routeId" {self.routeId}, \
+            "image" {self.image}>'
 
 
 class HighlightImage(db.Model):
     __tablename__ = 'HighlightImage'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer(), primary_key=True)
     highlightId = db.Column(db.Integer(), db.ForeignKey('highlight.id'))
     highlight = db.relationship('Highlight', back_populates='highlightImage')
     image = db.Column(db.String(255), nullable=False)
@@ -127,12 +153,17 @@ class HighlightImage(db.Model):
         super().__init__()
         self.highlightId = highlightId
         self.image = image
+    
+    def __repr__(self) -> str:
+        return f'<HighlightImage \
+        "highlightId" {self.highlightId}, \
+        "image" {self.image}>'
 
 
 class TagOfRoute(db.Model):
     __tablename__ = 'TagOfRoute'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer(), primary_key=True)
     tag = db.Column(db.String(45), nullable=False, default='Default Tag')
     routeId = db.Column(db.Integer(), db.ForeignKey('route.id'))
     route = db.relationship('Route', back_populates='tagOfRoute')
@@ -141,12 +172,17 @@ class TagOfRoute(db.Model):
         super().__init__()
         self.tag = tag
         self.routeId = routeId
+    
+    def __repr__(self) -> str:
+        return f'<TagOfRoute \
+        "tag" {self.tag}, \
+        "routeId" {self.routeId}>'
 
 
 class Review(db.Model):
     __tablename__ = 'Review'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer(), primary_key=True)
     topic = db.Column(db.String(45), nullable=False)
     review = db.Column(db.String(1024), nullable=False)
     rating = db.Column(db.Integer(), nullable=False) # 1-10
@@ -160,11 +196,17 @@ class Review(db.Model):
         self.rating = rating
         self.helpful = helpful
 
+    def __repr__(self) -> str:
+        return f'<Review \
+        "topic" {self.topic}, \
+        "review" {self.review}, \
+        "rating" {self.rating}, \
+        "helpful" {self.helpful}>'
 
 class ReviewImage(db.Model):
     __tablename__ = 'ReviewImage'
 
-    id = db.Column(db.Integer(), primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer(), primary_key=True)
     reviewId = db.Column(db.Integer(), db.ForeignKey('review.id'))
     review = db.relationship('Review', back_populates='reviewImage')
     image = db.Column(db.String(255), nullable=False)
@@ -173,3 +215,9 @@ class ReviewImage(db.Model):
         super().__init__()
         self.reviewId = reviewId
         self.image = image
+    
+    def __repr__(self) -> str:
+        return f'<ReviewImage \
+        "reviewId" {self.reviewId}, \
+        "image" {self.image}>'
+    
