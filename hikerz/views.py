@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, request
-from .db import User
-from .forms import *
+from db import User
+from forms import *
 
 # Hier stehen die URL-Endpunkte/Routes
 
@@ -15,3 +15,7 @@ def index():
 def login():
     test_user = User("admin", "admin@localhost.org", "admin", 0)
     return render_template('login.html', test_user=test_user)
+
+@views.route('/addTour')
+def addTour():
+    return render_template('addTour.html') # maybe pass the users current location as default position
