@@ -40,7 +40,6 @@ class User(db.Model):
     def __repr__(self):
         return f"<User {self.benutzername} {self.username}>"
 
-
 class Route(db.Model):
     __tablename__ = 'Route'
 

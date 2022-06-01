@@ -1,3 +1,4 @@
+
 :root {
     --farbe1: #2D5016;
     --farbe2: #93B7BE;
@@ -13,4 +14,11 @@
 
 .nav-link:hover{
     color: var(--farbe1);
+}
+
+.card-img{
+    max-width:100%;
+    height: auto;
+    max-height: 250px;
+    width: auto;
 }
