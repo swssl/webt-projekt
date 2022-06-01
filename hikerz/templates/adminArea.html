@@ -24,7 +24,26 @@
                     <td>
                         <ul class="list inline m-0">
                             <li class="list-inline-item">
-                                <img src="./../static/ButtonPictures/deleteicon.png" width="20" height="20" data-bs-toggle="tooltip" data-bs-placement="top" title data-bs-original-title="Delete">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModalFor{{ allUsers[u][0] }}" data-toggle="tooltip" data-placement="top" title="Benutzer löschen"><i class="fa fa-trash"></i></button>
+
+                                <div class="modal" id="myModalFor{{ allUsers[u][0] }}">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Benutzer löschen</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Möchten Sie den Benutzer {{ allUsers[u][0] }} endgültig löschen?</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" onclick="window.location.href = '/benutzerLoeschen//{{ allUsers[u][0] }}';">Löschen</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </li>
                         </ul>
                     </td>
@@ -48,5 +67,18 @@
     $(document).ready(function () {
     $('#example').DataTable();
     });
-  </script>
+
+    $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();   
+    });
+
+    {% for u in allUsers %}
+        $('#myModalFor{{ allUsers[u][0] }}').on('shown.bs.modal', function () {
+        $('#myInput').trigger('focus')
+        })
+    {% endfor %}
+
+
+</script>
+  
 {% endblock %}
