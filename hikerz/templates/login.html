@@ -2,6 +2,63 @@
 
 {%block content%}
 
-<!-- TODO: Login-Seite -->
+<div class="container-fluid">
+    <div class="row mt-5">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 d-flex justify-content-center">
+            <img style="width: 10em;" src="{{url_for('static', filename='img/hikerz_logo.svg')}}">
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 d-flex justify-content-center">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title text-center">
+                        <h1>Anmeldung</h1>
+                    </div>
+                    <form action="" , method="post">
+                        {{ login_form.csrf_token}}
+                        <div class="row">
+                            <div class="col">
+                                {{login_form.user_name.label(class="form-label")}}<br>
+                                {{login_form.user_name(class="form-control")}}<br>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                {{login_form.password.label(class="form-label")}}<br>
+                                {{login_form.password(class="form-control")}}<br>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col text-center">
+                                <!-- If there Forms validate()-Function found any errors, render them as Bootstrap-alerts: -->
+                                {% if login_form.errors != {} and request.method != "GET" %}
+                                {% for field, msg in login_form.errors.items() %}
+                                <div class="alert alert-danger" role="alert">{{ msg[0] }}</div>
+                                {% endfor %}
+                                {% endif %}
+                                {{ login_form.submit(class="btn", style="background-color: var(--farbe2)") }}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 d-flex justify-content-center mt-2">
+            <div class="">
+                <div>
+                    <a class="link-secondary" href="/register" style="font-size: 0.8em">Neues Konto erstellen</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {%endblock%}
