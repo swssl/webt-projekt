@@ -7,19 +7,101 @@
 
     <!-- Alle Touren werden angezeigt -->
 
-    <div class="row gx-5">
+    <div class="col-10 mx-auto">
 
-        {% for t in touren %}
-        
-            <div class="card bg-dark text-white col-lg-4 col-md-6 p-3 border bg-light">
-                <div class="card-header"><h3>Tour Titel</h3></div>
-                <img class="card-img" src="./../static/vorschaubilder/{{ touren[t] }}" alt="Card image">
-                <div class="card-footer">
-                    <a href="/testRoute" class="btn btn-primary stretched-link">Mehr Details</a>
-                </div>
+        <h2> Startpunkte der Touren</h2>
+
+        <div id="mapdiv" style="height:400px; width:100%;">&nbsp;</div>       
+
+        <br/>
+
+        <br/>
+
+        <div class="row">
+            
+
+            {% for t in touren %}
+            
+                <div class="card bg-dark text-white col-lg-4 col-md-6 p-3 border bg-light">
+                    <div class="card-header">
+                        <h3>Tour Titel</h3>
+                    </div>
+                    <img class="card-img" src="./../static/vorschaubilder/{{ touren[t] }}" alt="Card image">
+                    <div class="card-footer">
+                        <a href="/testRoute" class="btn btn-primary stretched-link">Mehr Details</a>
+                    </div>
                 </div>
 
-        {% endfor %}
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    
+
+
+
+
+<script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+<script>
+    map = new OpenLayers.Map("mapdiv");
+    map.addLayer(new OpenLayers.Layer.OSM());
+
+    var lonLat = new OpenLayers.LonLat( 8.5166646, 52.0166666 )
+          .transform(
+            new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+            map.getProjectionObject() // to Spherical Mercator Projection
+          );
+
+          var zoom=15;
+
+    var markers = new OpenLayers.Layer.Markers( "Markers" );
+    map.addLayer(markers);
+    map.setCenter (lonLat, zoom);
+    var size = new OpenLayers.Size(25,25);
+    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+  
+
+ /* Erste Markierung */
+
+    var lonLat_a = new OpenLayers.LonLat( 8.5266646, 52.0168666 ).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()   );
+    var lla = new OpenLayers.Marker( lonLat_a );
+    lla.events.register("click", map, function(e) { location.href = "/testRoute"
+});
+    markers.addMarker(lla);
+
+
+ /* Zweite Markierung */
+
+    var lonLat_b = new OpenLayers.LonLat( 8.5166646, 52.0166666 )
+         .transform(
+           new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+           map.getProjectionObject() // to Spherical Mercator Projection
+         );
+    var llb = new OpenLayers.Marker( lonLat_b )
+    llb.events.register("click", map, function(e) { location.href = "/testRoute"
+});
+    markers.addMarker(llb);
+
+   
+
+ /* Dritte Markierung */
+
+    var lonLat_c = new OpenLayers.LonLat( 18.5166646, 52.0166666  )
+         .transform(
+           new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+           map.getProjectionObject() // to Spherical Mercator Projection
+         );
+
+    var llc = new OpenLayers.Marker( lonLat_c )
+    llc.events.register("click", map, function(e) { location.href = "/testRoute"
+});
+    markers.addMarker(llc);
+
+    
+</script>
 
 
 {% endblock %}
