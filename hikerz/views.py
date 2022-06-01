@@ -58,6 +58,16 @@ def routeOverview():
     touren["Tour8"] = "bild8.jpeg"
     touren["Tour9"] = "bild9.jpeg"
 
+    koordinaten = {}
+    koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
+    koordinaten["Tour2"] = [8.5266546, 52.0161666 ]
+    koordinaten["Tour3"] = [8.5266346, 52.0164566 ] 
+    koordinaten["Tour4"] = [9.5278646, 52.0148666 ]
+    koordinaten["Tour5"] = [8.5267346, 52.0168466 ]
+    koordinaten["Tour6"] = [8.5266846, 51.0168266 ] 
+    koordinaten["Tour7"] = [8.5286646, 52.0168466 ]
+    koordinaten["Tour8"] = [8.5264646, 52.0161666 ]
+    koordinaten["Tour9"] = [8.5366646, 51.0164666 ]
 
     test_user = User("admin", "admin@localhost.org", "admin", 0)
     
@@ -72,7 +82,7 @@ def routeOverview():
     touren["Tour8"] = Route("Route8","Dies ist Route 8", "Weg", "bild8.jpeg", 1, 1, 20)
     touren["Tour9"] = Route("Route9","Dies ist Route 9", "Weg", "bild9.jpeg", 1, 1, 20)"""
 
-    return render_template('alleTouren.html', touren=touren, test_user=test_user)
+    return render_template('alleTouren.html', touren=touren, test_user=test_user, koordinaten=koordinaten)
 
 @views.route('/testRoute')
 def testRoute():

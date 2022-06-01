@@ -9,7 +9,10 @@
 
     <div class="col-10 mx-auto">
 
-        <h2> Startpunkte der Touren</h2>
+        <div class="row">
+            <h2 class="col-8"> Startpunkte der Touren</h2>
+            <button onclick="ermittlePosition()" class="col-4">Position ermitteln</button>
+        </div>
 
         <div id="mapdiv" style="height:400px; width:100%;">&nbsp;</div>       
 
@@ -38,22 +41,33 @@
 
     </div>
 
-
     
 
+{% endblock %}
 
-
-
+{% block scripts %}
 <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
 <script>
     map = new OpenLayers.Map("mapdiv");
     map.addLayer(new OpenLayers.Layer.OSM());
 
-    var lonLat = new OpenLayers.LonLat( 8.5166646, 52.0166666 )
+    /*if (navigator.geolocation) {
+        
+        var lonLat = new OpenLayers.LonLat( navigator.geolocation.getCurrentPosition.coords.longitude, navigator.geolocation.getCurrentPosition.coords.latitude )
           .transform(
             new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
             map.getProjectionObject() // to Spherical Mercator Projection
           );
+    } else { */
+        var lonLat = new OpenLayers.LonLat( 8.5166646, 52.0166666 )
+          .transform(
+            new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+            map.getProjectionObject() // to Spherical Mercator Projection
+          );
+    
+    /*    }*/
+
+    
 
           var zoom=15;
 
@@ -64,42 +78,37 @@
     var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
   
 
- /* Erste Markierung */
+    
+    /* einzelne Markierungen setzen */
+    {% for k in koordinaten %}
 
-    var lonLat_a = new OpenLayers.LonLat( 8.5266646, 52.0168666 ).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()   );
-    var lla = new OpenLayers.Marker( lonLat_a );
-    lla.events.register("click", map, function(e) { location.href = "/testRoute"
-});
-    markers.addMarker(lla);
+        var lonLat_{{ k }} = new OpenLayers.LonLat( {{ koordinaten[k][0] }}, {{ koordinaten[k][1] }} )
+            .transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()   );
+        var {{ k }} = new OpenLayers.Marker( lonLat_{{ k }} );
+        {{ k }}.events.register("click", map, function(e) { location.href = "/testRoute"  });
+        markers.addMarker({{ k }});
 
 
- /* Zweite Markierung */
+    {% endfor %}
 
-    var lonLat_b = new OpenLayers.LonLat( 8.5166646, 52.0166666 )
-         .transform(
-           new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
-           map.getProjectionObject() // to Spherical Mercator Projection
-         );
-    var llb = new OpenLayers.Marker( lonLat_b )
-    llb.events.register("click", map, function(e) { location.href = "/testRoute"
-});
-    markers.addMarker(llb);
 
-   
+    
+    
 
- /* Dritte Markierung */
+ 
 
-    var lonLat_c = new OpenLayers.LonLat( 18.5166646, 52.0166666  )
-         .transform(
-           new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
-           map.getProjectionObject() // to Spherical Mercator Projection
-         );
+function ermittlePosition() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(zeigePosition);
+    } else { 
+        ausgabe.innerHTML = 'Ihr Browser unterstützt keine Geolocation.';
+    }
+}
 
-    var llc = new OpenLayers.Marker( lonLat_c )
-    llc.events.register("click", map, function(e) { location.href = "/testRoute"
-});
-    markers.addMarker(llc);
-
+function zeigePosition(position) {
+    ausgabe.innerHTML = "Ihre Koordinaten sind:<br> Breite: " + position.coords.latitude + 
+    "<br>Länge: " + position.coords.longitude;	
+}
     
 </script>
 
