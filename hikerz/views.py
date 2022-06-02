@@ -84,6 +84,37 @@ def routeOverview():
 
     return render_template('alleTouren.html', touren=touren, test_user=test_user, koordinaten=koordinaten)
 
+@views.route('/tourenInNaehe/<posLon>/<posLat>')
+def aktuellerStandort(posLon, posLat):
+    standort = '{"lon":'+str(posLon)+', "lat":'+str(posLat)+'}'
+
+    #das touren-dictionary muss nachher zu einer db-abfrage geaendert werden
+    touren = {}#dictionary mit tourbezeichnung und pfad zu vorschaubild
+    touren["Tour1"] = "bild1.jpeg"
+    touren["Tour2"] = "bild2.jpeg"
+    touren["Tour3"] = "bild3.jpeg"
+    touren["Tour4"] = "bild4.jpeg"
+    touren["Tour5"] = "bild5.jpeg"
+    touren["Tour6"] = "bild6.jpeg"
+    touren["Tour7"] = "bild7.jpeg"
+    touren["Tour8"] = "bild8.jpeg"
+    touren["Tour9"] = "bild9.jpeg"
+
+    koordinaten = {}
+    koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
+    koordinaten["Tour2"] = [8.5266546, 52.0161666 ]
+    koordinaten["Tour3"] = [8.5266346, 52.0164566 ] 
+    koordinaten["Tour4"] = [9.5278646, 52.0148666 ]
+    koordinaten["Tour5"] = [8.5267346, 52.0168466 ]
+    koordinaten["Tour6"] = [8.5266846, 51.0168266 ] 
+    koordinaten["Tour7"] = [8.5286646, 52.0168466 ]
+    koordinaten["Tour8"] = [8.5264646, 52.0161666 ]
+    koordinaten["Tour9"] = [8.5366646, 51.0164666 ]
+
+    #naechste routen ermitteln
+    naechsteRouten = '{routen : [{title: "Tour1", pfad: "bild1.jpeg"}, {title: "Tour1", pfad: "bild1.jpeg"},{title: "Tour2", pfad: "bild2.jpeg"},{title: "Tour3", pfad: "bild3.jpeg"}]}'
+    return naechsteRouten
+
 @views.route('/testRoute')
 def testRoute():
     return "<h1>Testseite</h1>"

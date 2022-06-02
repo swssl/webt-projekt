@@ -3,22 +3,31 @@
 {% block content %}
 
 
-    <h1 align="center"> Alle Touren auf einen Blick </h1>
+    <h1 align="center"> Finde eine spannende Tour für dich </h1>
 
     <!-- Alle Touren werden angezeigt -->
 
     <div class="col-10 mx-auto">
 
-        <div class="row">
-            <h2 class="col-8"> Startpunkte der Touren</h2>
-            <button onclick="ermittlePosition()" class="col-4">Position ermitteln</button>
-        </div>
+            
+        <h2 class="col-8"> Übersicht der Startpunkte auf der Karte</h2>
+            
 
         <div id="mapdiv" style="height:400px; width:100%;">&nbsp;</div>       
 
         <br/>
 
         <br/>
+
+        <h2> Touren in deiner Nähe </h2>
+
+        <div id="demo">
+            <h2>Let AJAX change this text</h2>
+            <button type="button" onclick="loadDoc()">Change Content</button>
+          </div>
+
+
+        <h2> Alle Touren auf einen Blick </h2>
 
         <div class="row">
             
@@ -43,6 +52,26 @@
 
     
 
+
+
+    <div>
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" id="employee">
+                Get Record</button>
+        </span>
+        <table id="content">
+            <thead>
+                <tr>
+                    <th>
+                        Id
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="emp">
+            </tbody>
+        </table>
+    </div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -51,29 +80,48 @@
     map = new OpenLayers.Map("mapdiv");
     map.addLayer(new OpenLayers.Layer.OSM());
 
-    /*if (navigator.geolocation) {
-        
-        var lonLat = new OpenLayers.LonLat( navigator.geolocation.getCurrentPosition.coords.longitude, navigator.geolocation.getCurrentPosition.coords.latitude )
-          .transform(
-            new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
-            map.getProjectionObject() // to Spherical Mercator Projection
-          );
-    } else { */
-        var lonLat = new OpenLayers.LonLat( 8.5166646, 52.0166666 )
-          .transform(
-            new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
-            map.getProjectionObject() // to Spherical Mercator Projection
-          );
+    var positionLon = '';
+    var positionLat = '';
     
-    /*    }*/
+
+    var lonLat = new OpenLayers.LonLat( 8.5166646, 53.0166666 ).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject() );
+
+    navigator.geolocation.getCurrentPosition(
+        function(position){
+            // wenn Position ermittelt werden konnte, liefert
+            //'position.coords.latitude' und 'position.coords.longitude'
+            //die entsprechenden Längen- und Breitengrade
+            lonLat = new OpenLayers.LonLat( position.coords.longitude, position.coords.latitude ).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject() );
+            
+            positionLon = position.coords.longitude;
+            positionLat = position.coords.latitude;
+
+            var zoom=12;
+            map.setCenter (lonLat, zoom);
+
+
+        }, 
+        function () {
+            // der zweite Funktionsteil wird ausgeführt, wenn keine
+            //Positionsermittlung stattfinden konnte
+            lonLat = new OpenLayers.LonLat( 8.7166646, 52.0166666 ).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject() // to Spherical Mercator Projection
+            );
+
+            positionLon = 8.7166646;
+            positionLat = 52.0166666;
+
+            var zoom=12;
+            map.setCenter (lonLat, zoom);
+    })
+    
+    
 
     
 
-          var zoom=15;
+    
 
     var markers = new OpenLayers.Layer.Markers( "Markers" );
     map.addLayer(markers);
-    map.setCenter (lonLat, zoom);
     var size = new OpenLayers.Size(25,25);
     var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
   
@@ -92,23 +140,74 @@
     {% endfor %}
 
 
-    
-    
+    //$.getJSON("/tourenInNaehe/"+positionLon+"/"+positionLat, function( data ) {
+    $.getJSON("/", function( data ) {
+    /*for(var key in data.routen){
+         var out='<div class="card">';
+              out+='<div class="card-header">'+data.articles[key].title+'</div>';
+              out+='<img class="card-img-top" src="./../static/vorschaubilder/'+data.articles[key].pfad+'" alt="...">';
 
- 
+               out+='<div class="card-body">';
+               //out+=data.articles[key].exerpt;
+               out+='<div class="cls-for-load"></div>';
+               //out+='<button class="btn btn-primary" onclick="$(this).parent().find(\'.cls-for-load\').load( \''+data.articles[key].url+'\');">more...</button>';
+               out+='</div>';
+               out+='</div>';*/
+               var out = '<h1> Test </h1>'
+            $('#demo').append(out);
+    //}
 
-function ermittlePosition() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(zeigePosition);
-    } else { 
-        ausgabe.innerHTML = 'Ihr Browser unterstützt keine Geolocation.';
+});
+
+
+    
+    function loadDoc() {
+  const xhttp = new XMLHttpRequest();
+  xhttp.onload = function(data) {
+      var out = "<h1>Beginn</h1>"
+    for(var key in data){
+         out+=""+key
     }
+    document.getElementById("demo").innerHTML = out;
+    }
+  xhttp.open("GET", "/tourenInNaehe/"+positionLon+"/"+positionLat, true);
+  xhttp.send();
 }
 
-function zeigePosition(position) {
-    ausgabe.innerHTML = "Ihre Koordinaten sind:<br> Breite: " + position.coords.latitude + 
-    "<br>Länge: " + position.coords.longitude;	
-}
+
+
+
+
+
+$(function () {
+        $("#employee").on("click", function () {
+            $.ajax({
+                url: "http://127.0.0.1:5000/tourenInNaehe/"+positionLon+"/"+positionLat,
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    var json = JSON.parse(data.d);
+                    $(json).each(function (index, item) {
+                        var questionId = json[index].id;
+                        var question = json[index].question;
+                        var course = json[index].course;
+                        for (var option = 0; option < json[index].answerEntities.length; option++) {
+                            var ans = json[index].answerEntities[option].ans;
+                            var ansId = json[index].answerEntities[option].id;
+                            var ansStatus = json[index].answerEntities[option].status;
+                            $('tbody#emp').append(
+                            '<tr><td>'
+                            + title
+                            
+                            + '</td></tr>')
+                        }
+                    });
+                },
+                error: function (data) { alert(data.responseText); }
+            });
+        });
+    });
     
 </script>
 
