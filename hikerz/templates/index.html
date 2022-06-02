@@ -1,0 +1,104 @@
+{%extends "base.html" %}
+{%block header%}
+<style>
+    body {
+        background-color: #635255;
+    }
+</style>
+{%endblock%}
+{%block content%}
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    <header class="mb-auto">
+        <div class="row">
+            <!-- <div class="col-9"></div> -->
+            <div class="col-3 offset-9 p-2">
+                <div style="background-color: white; width:6em; padding:0.5em">
+                    <img style="width:5em" src="{{url_for('static',filename='img/hikerz_logo.svg')}}" alt="Hikerz Logo">
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="px-2">
+        <div class="row mt-5 mb-4 text-light">
+            <div class="col-md-2"></div> <!-- auf dieser Seite sind mehrere leere divs mit col-md-2, um den Inhalt bei große bildschirmen zu zentrieren -->
+            <div class="col">
+                <h1>Willkommen bei Hikerz.</h1>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col">
+                <p class="lead text-light">Mit Hikerz kannst du neue Wandertouren in deiner Nähe entdecken oder den
+                    nächsten
+                    Urlaub planen
+                </p>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="row" style="margin-bottom: 3em">
+            <div class="col-md-2"></div>
+            <div class="col mt-3">
+                <a href="/register" class="btn border bg-secondary order-light border-3 text-light">Konto erstellen</a>
+                <a href="/login" class="btn btn-secondary border border-2"
+                    style="background-color: var(--farbe2)">Anmelden</a>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <hr class="text-light">
+        <div class="row" style="margin-top: 3em">
+            <div class="col align-self-end">
+                <figure class="text-end">
+                    <blockquote class="blockquote text-light">
+                        <p>"Mit Hikerz habe ich viele neue Orte und Routen kennengelernt"</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer text-white-50">
+                        Wandermagazin <cite title="Source Title">karabiner</cite>, Ausgabe 02/2022
+                    </figcaption>
+                </figure>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+        <div class="row" style="margin-top: 3em">
+            <div class="col-md-3"></div>
+            <div class="col">
+                <figure class="">
+                    <blockquote class="blockquote text-light">
+                        <p>"Mit Hikerz ist das Abenteuer vorprogrammiert!"</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer text-white-50">
+                        <cite title="Source Title">Wanda Schuh, dt. Meisterin im Hürdenwandern</cite>
+                    </figcaption>
+                </figure>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 3em">
+            <div class="col align-self-end">
+                <figure class="text-end">
+                    <blockquote class="blockquote text-light">
+                        <p>"Das beste was dem Wandersport passieren konnte!"</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer text-white-50">
+                        <cite title="Source Title">Jakob S. Weg</cite>, Kapitän der Wandernationalmannschaft
+                    </figcaption>
+                </figure>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+        <hr class="text-light">
+    </main>
+        <footer>
+            <div class="row">
+                <div class="col">
+                    <p>
+                        Hikerz übernimmt keine Garantien bzgl. der dargestellten Routen und keine Haftung bei Sach- oder
+                        Personenschäden.
+                    </p>
+                </div>
+            </div>
+        </footer>
+</div>
+
+
+
+{%endblock%}
