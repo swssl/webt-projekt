@@ -23,7 +23,6 @@
 
         <div id="demo">
             <h2>Let AJAX change this text</h2>
-            <button type="button" onclick="loadDoc()">Change Content</button>
           </div>
 
 
@@ -51,31 +50,15 @@
     </div>
 
     
+    <div id="target"></div>
+    <button onclick="kb_source_2_target()">Hier klicken</button>
 
 
-
-    <div>
-        <span class="input-group-btn">
-            <button class="btn btn-default" type="button" id="employee">
-                Get Record</button>
-        </span>
-        <table id="content">
-            <thead>
-                <tr>
-                    <th>
-                        Id
-                    </th>
-                </tr>
-            </thead>
-            <tbody id="emp">
-            </tbody>
-        </table>
-    </div>
 
 {% endblock %}
 
 {% block scripts %}
-<script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+<script src="http://www.openlayers.org/api/OpenLayers.js" type="text/javascript"></script>
 <script>
     map = new OpenLayers.Map("mapdiv");
     map.addLayer(new OpenLayers.Layer.OSM());
@@ -140,74 +123,42 @@
     {% endfor %}
 
 
-    //$.getJSON("/tourenInNaehe/"+positionLon+"/"+positionLat, function( data ) {
-    $.getJSON("/", function( data ) {
-    /*for(var key in data.routen){
-         var out='<div class="card">';
-              out+='<div class="card-header">'+data.articles[key].title+'</div>';
-              out+='<img class="card-img-top" src="./../static/vorschaubilder/'+data.articles[key].pfad+'" alt="...">';
+    
+    $.ajax({ url: '/routeoverview/tourenInNaehe', 
+                            success: function (result) {
+                                console.log(result);
+                                $('#demo').html(result.name)
+                        }});
 
-               out+='<div class="card-body">';
-               //out+=data.articles[key].exerpt;
-               out+='<div class="cls-for-load"></div>';
-               //out+='<button class="btn btn-primary" onclick="$(this).parent().find(\'.cls-for-load\').load( \''+data.articles[key].url+'\');">more...</button>';
-               out+='</div>';
-               out+='</div>';*/
-               var out = '<h1> Test </h1>'
-            $('#demo').append(out);
-    //}
+/*
+    const xhr = new XMLHttpRequest();
+    xhr.addEventListener("load", function() {
+    // Hier kommt die Antwort
+    });
+    xhr.open('GET', '/routeoverview/tourenInNaehe');
+    xhr.send();
+    var buildString = "<h1> Hier sind die nächsten 6 Routen </h1>"
+    for (key in xhr)
+    {
+        buildString+="<p> Test </p>"+key
+    }
+    document.getElementById("demo").innerHTML = xhr.status + buildString;
+    console.log(buildString);*/
 
-});
+    
+    
+
+
 
 
     
-    function loadDoc() {
-  const xhttp = new XMLHttpRequest();
-  xhttp.onload = function(data) {
-      var out = "<h1>Beginn</h1>"
-    for(var key in data){
-         out+=""+key
-    }
-    document.getElementById("demo").innerHTML = out;
-    }
-  xhttp.open("GET", "/tourenInNaehe/"+positionLon+"/"+positionLat, true);
-  xhttp.send();
-}
+    
 
 
 
 
 
 
-$(function () {
-        $("#employee").on("click", function () {
-            $.ajax({
-                url: "http://127.0.0.1:5000/tourenInNaehe/"+positionLon+"/"+positionLat,
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                success: function (data) {
-                    var json = JSON.parse(data.d);
-                    $(json).each(function (index, item) {
-                        var questionId = json[index].id;
-                        var question = json[index].question;
-                        var course = json[index].course;
-                        for (var option = 0; option < json[index].answerEntities.length; option++) {
-                            var ans = json[index].answerEntities[option].ans;
-                            var ansId = json[index].answerEntities[option].id;
-                            var ansStatus = json[index].answerEntities[option].status;
-                            $('tbody#emp').append(
-                            '<tr><td>'
-                            + title
-                            
-                            + '</td></tr>')
-                        }
-                    });
-                },
-                error: function (data) { alert(data.responseText); }
-            });
-        });
-    });
     
 </script>
 

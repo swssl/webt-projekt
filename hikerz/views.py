@@ -84,9 +84,9 @@ def routeOverview():
 
     return render_template('alleTouren.html', touren=touren, test_user=test_user, koordinaten=koordinaten)
 
-@views.route('/tourenInNaehe/<posLon>/<posLat>')
-def aktuellerStandort(posLon, posLat):
-    standort = '{"lon":'+str(posLon)+', "lat":'+str(posLat)+'}'
+@views.route('/routeoverview/tourenInNaehe')
+def aktuellerStandort():
+    #standort = '{"lon":'+str(posLon)+', "lat":'+str(posLat)+'}'
 
     #das touren-dictionary muss nachher zu einer db-abfrage geaendert werden
     touren = {}#dictionary mit tourbezeichnung und pfad zu vorschaubild
