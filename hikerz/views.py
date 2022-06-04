@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, request
+from flask import Blueprint, render_template, redirect, request, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
 from .db import *
 from .forms import *
@@ -71,21 +71,11 @@ def routeOverview():
 
     test_user = User("admin", "admin@localhost.org", "admin", 0)
     
-    """touren = {}
-    touren["Tour1"] = Route("Route1","Dies ist Route 1", "Weg", "bild1.jpeg", 1, 1, 20)
-    touren["Tour2"] = Route("Route2","Dies ist Route 2", "Weg", "bild2.jpeg", 1, 1, 20)
-    touren["Tour3"] = Route("Route3","Dies ist Route 3", "Weg", "bild3.jpeg", 1, 1, 20)
-    touren["Tour4"] = Route("Route4","Dies ist Route 4", "Weg", "bild4.jpeg", 1, 1, 20)
-    touren["Tour5"] = Route("Route5","Dies ist Route 5", "Weg", "bild5.jpeg", 1, 1, 20)
-    touren["Tour6"] = Route("Route6","Dies ist Route 6", "Weg", "bild6.jpeg", 1, 1, 20)
-    touren["Tour7"] = Route("Route7","Dies ist Route 7", "Weg", "bild7.jpeg", 1, 1, 20)
-    touren["Tour8"] = Route("Route8","Dies ist Route 8", "Weg", "bild8.jpeg", 1, 1, 20)
-    touren["Tour9"] = Route("Route9","Dies ist Route 9", "Weg", "bild9.jpeg", 1, 1, 20)"""
 
     return render_template('alleTouren.html', touren=touren, test_user=test_user, koordinaten=koordinaten)
 
-@views.route('/routeoverview/tourenInNaehe')
-def aktuellerStandort():
+@views.route('/routeoverview/tourenInNaehe/<posLon>/<posLat>')
+def aktuellerStandort(posLon, posLat):
     #standort = '{"lon":'+str(posLon)+', "lat":'+str(posLat)+'}'
 
     #das touren-dictionary muss nachher zu einer db-abfrage geaendert werden
@@ -112,8 +102,18 @@ def aktuellerStandort():
     koordinaten["Tour9"] = [8.5366646, 51.0164666 ]
 
     #naechste routen ermitteln
-    naechsteRouten = '{routen : [{title: "Tour1", pfad: "bild1.jpeg"}, {title: "Tour1", pfad: "bild1.jpeg"},{title: "Tour2", pfad: "bild2.jpeg"},{title: "Tour3", pfad: "bild3.jpeg"}]}'
-    return naechsteRouten
+    naechsteRouten = {"routen": []}
+    for k in koordinaten:
+        if len(naechsteRouten["routen"])<6:
+            dist = ((koordinaten[k][0]-float(posLon))**2) + ((koordinaten[k][1]-float(posLat))**2)
+            naechsteRouten["routen"].append({"title":k, "pfad":touren[k], "distanz":dist})
+        else:
+            dist = ((koordinaten[k][0]-float(posLon))**2) + ((koordinaten[k][1]-float(posLat))**2)
+            #naechsteRouten = sorted(naechsteRouten, key=lambda d: float(d['distanz']))
+            naechsteRouten["routen"].sort(key=lambda d: list(d.values()))
+            print(naechsteRouten)
+    #naechsteRouten = {"routen" : [{"title": "Tour1", "pfad": "bild1.jpeg"}, {"title": "Tour1", "pfad": "bild1.jpeg"},{"title": "Tour2", "pfad": "bild2.jpeg"},{"title": "Tour3", "pfad": "bild3.jpeg"},{"title": "Tour1", "pfad": "bild1.jpeg"}, {"title": "Tour1", "pfad": "bild1.jpeg"},{"title": "Tour2", "pfad": "bild2.jpeg"},{"title": "Tour3", "pfad": "bild3.jpeg"}]}
+    return jsonify(naechsteRouten)
 
 @views.route('/testRoute')
 def testRoute():

@@ -22,8 +22,9 @@
         <h2> Touren in deiner Nähe </h2>
 
         <div id="demo">
-            <h2>Let AJAX change this text</h2>
-          </div>
+            <div id="target"></div>
+            <button onclick="kb_source_2_target()">Lasse dir Touren in deiner Nähe anzeigen</button>
+        </div>
 
 
         <h2> Alle Touren auf einen Blick </h2>
@@ -50,8 +51,6 @@
     </div>
 
     
-    <div id="target"></div>
-    <button onclick="kb_source_2_target()">Hier klicken</button>
 
 
 
@@ -122,28 +121,28 @@
 
     {% endfor %}
 
-
     
-    $.ajax({ url: '/routeoverview/tourenInNaehe', 
-                            success: function (result) {
-                                console.log(result);
-                                $('#demo').html(result.name)
-                        }});
+    function kb_source_2_target() {
+        $.getJSON( '/routeoverview/tourenInNaehe/'+positionLon+'/'+positionLat,    function (data) {
+            var htmlString = '<div class="row">'
+            for (key in data.routen)
+            {                
+                htmlString+= '<div class="card bg-dark text-white col-lg-4 col-md-6 p-3 border bg-light">'
+                htmlString+= '    <div class="card-header">'
+                htmlString+= '        <h3>'+data.routen[key].title+'</h3>'
+                htmlString+= '    </div>'
+                htmlString+= '    <img class="card-img" src="./../static/vorschaubilder/'+data.routen[key].pfad+'" alt="Card image">'
+                htmlString+= '    <div class="card-footer">'
+                htmlString+= '        <a href="/testRoute" class="btn btn-primary stretched-link">Mehr Details</a>'
+                htmlString+= '    </div>'
+                htmlString+= '</div>'
+            }
+            htmlString+='</div>'
+            document.getElementById("demo").innerHTML = htmlString;
+                                
+        });
+    };
 
-/*
-    const xhr = new XMLHttpRequest();
-    xhr.addEventListener("load", function() {
-    // Hier kommt die Antwort
-    });
-    xhr.open('GET', '/routeoverview/tourenInNaehe');
-    xhr.send();
-    var buildString = "<h1> Hier sind die nächsten 6 Routen </h1>"
-    for (key in xhr)
-    {
-        buildString+="<p> Test </p>"+key
-    }
-    document.getElementById("demo").innerHTML = xhr.status + buildString;
-    console.log(buildString);*/
 
     
     
