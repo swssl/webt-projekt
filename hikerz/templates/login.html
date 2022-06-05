@@ -16,14 +16,23 @@
             <div class="card">
                 <div class="card-body">
                     <div class="card-title text-center">
+                        {%if username_value%}
+                        <h4>Änderungen gespeichert</h4>
+                        {%else%}
                         <h1>Anmeldung</h1>
+                        {%endif%}
                     </div>
                     <form action="" , method="post">
                         {{ login_form.csrf_token}}
                         <div class="row">
                             <div class="col">
                                 {{login_form.user_name.label(class="form-label")}}<br>
-                                {{login_form.user_name(class="form-control")}}<br>
+                                {%if username_value %}
+                                {{login_form.user_name(class="form-control", value=username_value, readonly="readonly")}}
+                                {%else%}
+                                {{login_form.user_name(class="form-control")}}
+                                {%endif%}
+                                <br>
                             </div>
                         </div>
                         <div class="row">
