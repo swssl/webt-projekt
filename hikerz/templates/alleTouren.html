@@ -19,15 +19,20 @@
 
         <br/>
 
+        <br/>
+        <br/>
+
         <h2> Touren in deiner Nähe </h2>
+        <br/>
 
         <div id="demo">
-            <div id="target"></div>
-            <button onclick="kb_source_2_target()">Lasse dir Touren in deiner Nähe anzeigen</button>
         </div>
 
+        <br/>
+        <br/>
 
         <h2> Alle Touren auf einen Blick </h2>
+        <br/>
 
         <div class="row">
             
@@ -81,6 +86,8 @@
             var zoom=12;
             map.setCenter (lonLat, zoom);
 
+            tourenInDeinerNaeheFinden();
+
 
         }, 
         function () {
@@ -94,6 +101,8 @@
 
             var zoom=12;
             map.setCenter (lonLat, zoom);
+
+            tourenInDeinerNaeheNichtGefunden();
     })
     
     
@@ -122,7 +131,7 @@
     {% endfor %}
 
     
-    function kb_source_2_target() {
+    function tourenInDeinerNaeheFinden() {
         $.getJSON( '/routeoverview/tourenInNaehe/'+positionLon+'/'+positionLat,    function (data) {
             var htmlString = '<div class="row">'
             for (key in data.routen)
@@ -142,6 +151,14 @@
                                 
         });
     };
+
+    function tourenInDeinerNaeheNichtGefunden(){
+        var htmlString = '<br/>'
+        htmlString += '<p>Es konnten keine Routen in Ihrer Nähge gefunden werden.</p>'
+        htmlString += '<p>Bitte stellen Sie sicher, dass Sie der Webseite Zugriff auf Ihren Standort gewähren.</p>'
+        document.getElementById("demo").innerHTML = htmlString;
+
+    }
 
 
     

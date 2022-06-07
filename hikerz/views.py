@@ -104,15 +104,39 @@ def aktuellerStandort(posLon, posLat):
     #naechste routen ermitteln
     naechsteRouten = {"routen": []}
     for k in koordinaten:
-        if len(naechsteRouten["routen"])<6:
+        if len(naechsteRouten["routen"])<1:#noch kein elemt in der liste
             dist = ((koordinaten[k][0]-float(posLon))**2) + ((koordinaten[k][1]-float(posLat))**2)
             naechsteRouten["routen"].append({"title":k, "pfad":touren[k], "distanz":dist})
-        else:
+
+        if len(naechsteRouten["routen"])<6:#liste ist noch nicht voll
             dist = ((koordinaten[k][0]-float(posLon))**2) + ((koordinaten[k][1]-float(posLat))**2)
-            #naechsteRouten = sorted(naechsteRouten, key=lambda d: float(d['distanz']))
-            naechsteRouten["routen"].sort(key=lambda d: list(d.values()))
-            print(naechsteRouten)
-    #naechsteRouten = {"routen" : [{"title": "Tour1", "pfad": "bild1.jpeg"}, {"title": "Tour1", "pfad": "bild1.jpeg"},{"title": "Tour2", "pfad": "bild2.jpeg"},{"title": "Tour3", "pfad": "bild3.jpeg"},{"title": "Tour1", "pfad": "bild1.jpeg"}, {"title": "Tour1", "pfad": "bild1.jpeg"},{"title": "Tour2", "pfad": "bild2.jpeg"},{"title": "Tour3", "pfad": "bild3.jpeg"}]}
+            #print(naechsteRouten)
+            naechsteRouten["routen"].append({"title":k, "pfad":touren[k], "distanz":dist})#neuen platz am ende einfügen
+
+            for c,i in enumerate(naechsteRouten["routen"]):#an der passenden stelle der groesse nach sortiert einfuegen
+                if i["distanz"] > dist:
+
+                    for j in range(len(naechsteRouten["routen"])-1, c+1, -1):#alle um einen nach hinten verschieben
+                        naechsteRouten["routen"][j] = naechsteRouten["routen"][j-1]
+
+                    naechsteRouten["routen"][c] = {"title":k, "pfad":touren[k], "distanz":dist}#an aktuelle position die neue route einfuegen
+
+                    break
+        
+        else:#liste ist zwar schon voll koennte aber naeher als eine andere route sein
+
+            dist = ((koordinaten[k][0]-float(posLon))**2) + ((koordinaten[k][1]-float(posLat))**2)
+
+            for c,i in enumerate(naechsteRouten["routen"]):#an der passenden stelle der groesse nach sortiert einfuegen
+                if i["distanz"] > dist:
+
+                    for j in range(len(naechsteRouten["routen"])-1, c+1, -1):#alle um einen nach hinten verschieben
+                        naechsteRouten["routen"][j] = naechsteRouten["routen"][j-1]
+
+                    naechsteRouten["routen"][c] = {"title":k, "pfad":touren[k], "distanz":dist}#an aktuelle position die neue route einfuegen
+
+                    break
+
     return jsonify(naechsteRouten)
 
 @views.route('/testRoute')
