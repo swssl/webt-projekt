@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, redirect, request
+from sys import flags
+from flask import Blueprint, render_template, redirect, request, abort
 from flask_login import current_user, login_required, login_user, logout_user
 from .db import *
 from .forms import *
@@ -81,27 +82,27 @@ def testRoute():
 
 
 @views.route('/adminbereich')
+@login_required
 def adminbereich():
+    if current_user.rolle != 1:
+        abort(401)
+    allUsers = User.query.all() 
     test_user = User("admin", "admin@localhost.org", "admin", 0)
-    allUsers = {"user1":["Test1","1@1.de","admin"], "user2":["Test2","2@2.de","user"],"user3":["Test3","3@3.de","user"],"user4":["Test4","4@4.de","user"],"user5":["Test5","5@5.de","user"],"user6":["Test6","6@6.de","user"],"user7":["Test7","7@7.de","user"],"user8":["Test8","8@8.de","user"],"user9":["Test9","9@9.de","user"],"user10":["Test10","10@10.de","user"],"user11":["Test11","11@11.de","admin"], "user12":["Test12","12@12.de","user"],"user13":["Test13","13@13.de","user"],"user14":["Test14","14@41.de","user"],"user15":["Test15","15@51.de","user"],"user16":["Test16","16@16.de","user"],"user17":["Test17","71@17.de","user"],"user8":["Test18","18@18.de","user"],"user19":["Test19","91@19.de","user"],"user20":["Test20","20@20.de","user"]}
+    
     return render_template("adminArea.html", allUsers=allUsers, test_user=test_user)
 
 
 @views.route('/benutzerLoeschen/<userID>')
+@login_required
 def adminbereichUserDelete(userID):
-    print("Benutzer der geloescht werden soll:",userID)
+    if current_user.username == userID:#man darf sich nicht selber loeschen
+        return redirect('/adminbereich')#auf adminbereich verlinken
 
-    #loesch logik muss angepasst werden
-    allUsers = {"user1":["Test1","1@1.de","admin"], "user2":["Test2","2@2.de","user"],"user3":["Test3","3@3.de","user"],"user4":["Test4","4@4.de","user"],"user5":["Test5","5@5.de","user"],"user6":["Test6","6@6.de","user"],"user7":["Test7","7@7.de","user"],"user8":["Test8","8@8.de","user"],"user9":["Test9","9@9.de","user"],"user10":["Test10","10@10.de","user"],"user11":["Test11","11@11.de","admin"], "user12":["Test12","12@12.de","user"],"user13":["Test13","13@13.de","user"],"user14":["Test14","14@41.de","user"],"user15":["Test15","15@51.de","user"],"user16":["Test16","16@16.de","user"],"user17":["Test17","71@17.de","user"],"user8":["Test18","18@18.de","user"],"user19":["Test19","91@19.de","user"],"user20":["Test20","20@20.de","user"]}
-    loeschUser = None
-    for u in allUsers:
-        if allUsers[u][0] == userID:
-            loeschUser = u
-    if loeschUser is not None:
-        del allUsers[loeschUser]
 
-    test_user = User("admin", "admin@localhost.org", "admin", 0)
+    #benutzer wird aus db geloescht
+    User.query.filter(User.username == userID).delete()
+    db.session.commit()
     
-    return render_template("adminArea.html", allUsers=allUsers, test_user=test_user)
+    return redirect('/adminbereich')#auf adminbereich verlinken
 
 
