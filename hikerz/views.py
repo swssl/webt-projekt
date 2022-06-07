@@ -87,9 +87,9 @@ def adminbereich():
     if current_user.rolle != 1:
         abort(401)
     allUsers = User.query.all() 
-    test_user = User("admin", "admin@localhost.org", "admin", 0)
+    #test_user = User("admin", "admin@localhost.org", "admin", 0)
     
-    return render_template("adminArea.html", allUsers=allUsers, test_user=test_user)
+    return render_template("adminArea.html", allUsers=allUsers)
 
 
 @views.route('/benutzerLoeschen/<userID>')
