@@ -31,7 +31,12 @@
                     <td>
                         <ul class="list inline m-0">
                             <li class="list-inline-item">
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModalFor{{ u.username }}" data-toggle="tooltip" data-placement="top" title="Benutzer löschen"><i class="fa fa-trash"></i></button>
+                                {% if u.rolle == 1 %}
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModalFor{{ u.username }}" data-toggle="tooltip" data-placement="top" title="Benutzer löschen" disabled><i class="fa fa-trash"></i></button>
+                                {% endif %}
+                                {% if u.rolle != 1 %}
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModalFor{{ u.username }}" data-toggle="tooltip" data-placement="top" title="Benutzer löschen"><i class="fa fa-trash"></i></button>
+                                {% endif %}
 
                                 <div class="modal" id="myModalFor{{ u.username }}">
                                     <div class="modal-dialog" role="document">

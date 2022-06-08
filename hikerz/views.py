@@ -95,17 +95,21 @@ def adminbereich():
 @views.route('/benutzerLoeschen/<userID>')
 @login_required
 def adminbereichUserDelete(userID):
-    if current_user.rolle != 1:
-        abort(401)
-    if current_user.username == userID:#man darf sich nicht selber loeschen
+    if current_user.rolle == 1 and current_user.username == userID:#ein Admin darf sich nicht selber loeschen
+        return redirect('/adminbereich')
+    elif current_user.rolle == 1 and User.query.filter(User.username == userID).first().rolle == 1:#ein Admin darf keinen anderen Admin loeschen
+        return redirect('/adminbereich')
+    elif current_user.username == userID:#man darf sich selber ohne Adminrechte loeschen
+        User.query.filter(User.username == userID).delete()
+        db.session.commit()
+        return redirect('/')#auf homepage verlinken
+    elif current_user.rolle == 1:#ein Admin will einen normalen User loeschen
+        #benutzer wird aus db geloescht
+        User.query.filter(User.username == userID).delete()
+        db.session.commit()    
         return redirect('/adminbereich')#auf adminbereich verlinken
-
-
-    #benutzer wird aus db geloescht
-    User.query.filter(User.username == userID).delete()
-    db.session.commit()
-    
-    return redirect('/adminbereich')#auf adminbereich verlinken
+    else:#ein nicht Admin will loeschen
+        abort(401)
 
 
 @views.route('/benutzerRechteErhoehen/<userID>')
