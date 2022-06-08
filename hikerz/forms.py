@@ -31,7 +31,7 @@ class RegistrationForm(FlaskForm):
         DataRequired(),
         EqualTo('confirm_password', message='Die Passwörter stimmen nicht überein')
     ])
-    confirm_password = PasswordField('Passwort', [InputRequired()])
+    confirm_password = PasswordField('Passwort bestätigen', [InputRequired()])
     captcha = BooleanField('Ich bin kein Roboter', [InputRequired()])
     submit = SubmitField("Konto erstellen")
 
