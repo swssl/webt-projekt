@@ -114,8 +114,24 @@ def adminbereichRechteErhoehen(userID):
     if current_user.rolle != 1:
         abort(401)
 
-    #benutzer wird aus db geloescht
+    #benutzer wird geupdated
     num_rows_updated = User.query.filter_by(username=userID).update(dict(rolle=1))
+    db.session.commit()
+    
+    return redirect('/adminbereich')#auf adminbereich verlinken
+
+
+@views.route('/benutzerRechteVerringern/<userID>')
+@login_required
+def adminbereichRechteVerringern(userID):
+    if current_user.rolle != 1:
+        abort(401)
+
+    if current_user.username == userID:#man darf sich nicht selber die rechte wegnehmen
+        return redirect('/adminbereich')#sonst koennten alle admins geloescht werden
+
+    #benutzer wird aus db geloescht
+    num_rows_updated = User.query.filter_by(username=userID).update(dict(rolle=0))
     db.session.commit()
     
     return redirect('/adminbereich')#auf adminbereich verlinken

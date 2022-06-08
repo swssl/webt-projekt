@@ -20,7 +20,14 @@
                 <tr>
                     <th scope="row">{{ u.username }}</th>
                     <td>{{ u.emailAdresse }}</td>
-                    <td>{{ u.rolle }}</td>
+                    <td>{% if u.rolle == 1 %}
+                            Administrator
+                        {% endif %}
+
+                        {% if u.rolle != 1 %}
+                            Benutzer
+                        {% endif %}
+                    </td>
                     <td>
                         <ul class="list inline m-0">
                             <li class="list-inline-item">
@@ -47,6 +54,11 @@
                                 {% if u.rolle != 1 %}
 
                                     <button type="button" class="btn btn-primary" onclick="window.location.href='/benutzerRechteErhoehen/{{ u.username }}';" data-toggle="tooltip" data-placement="top" title="Benutzer zu Administrator machen"><i class="fa fa-user-plus" aria-hidden="true"></i></button>
+
+                                {% endif %}
+                                {% if u.rolle == 1 %}
+
+                                    <button type="button" class="btn btn-primary" onclick="window.location.href='/benutzerRechteVerringern/{{ u.username }}';" data-toggle="tooltip" data-placement="top" title="Administratorenrechte des Benutzers entfernen"><i class="fa fa-user-times" aria-hidden="true"></i></button>
 
                                 {% endif %}
 
