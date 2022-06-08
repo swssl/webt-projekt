@@ -54,8 +54,9 @@
                     </div>
                     <div class="card mt-4">
                         <div class="card-body">
-                            <h5>{{user.username}}s Touren:</h5>
+                            <h4>{{user.username}}s Touren:</h4>
                             <div class="list-group">
+                                {%if displayed_tours%}
                                 {%for t in displayed_tours%}
                                 <a href="#" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
@@ -65,6 +66,11 @@
                                     <p class="mb-1">{{t.description[:20]}}...</p>
                                 </a>
                                 {%endfor%}
+                                {%else%}
+                                <div class="mt-3 d-flex flex-column align-items-center text-center">
+                                    <h3 class="text-black-50 fst-italic">{{user.username}} hat noch keine Touren veröffentlicht.</h3>
+                                </div>
+                                {%endif%}
                             </div>
                         </div>
                     </div>
@@ -80,11 +86,12 @@
                                 </div>
                                 <div class="row mb-2">
                                     <!-- TODO: Hier ist plaatz für statistiken oder so vielleicht -->
-                                    <p class="align-center">{{user.username}}</p>
+                                    <div class="align-center" style="font-size: 1.4em">{{user.username}}</div>
+                                    <small class="text-black-50">Angemeldet seit dem {{user.member_since}}</small>
                                 </div>
                                 {%if current_user.username == user.username%}
                                 <div class="row container-fluid">
-                                    <hr>
+                                    <hr class="my-2">
                                 </div>
                                 <div class="row mt-2">
                                     <div class="mb-2">
