@@ -69,10 +69,10 @@ def routeOverview():
     koordinaten["Tour8"] = [8.5264646, 52.0161666 ]
     koordinaten["Tour9"] = [8.5366646, 51.0164666 ]
 
-    test_user = User("admin", "admin@localhost.org", "admin", 0)
-    
+    touren = Route.query.all()
+    print(touren)
 
-    return render_template('alleTouren.html', touren=touren, test_user=test_user, koordinaten=koordinaten)
+    return render_template('alleTouren.html', touren=touren, koordinaten=koordinaten)
 
 @views.route('/routeoverview/tourenInNaehe/<posLon>/<posLat>')
 def aktuellerStandort(posLon, posLat):
