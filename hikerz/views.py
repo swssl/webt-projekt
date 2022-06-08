@@ -1,9 +1,7 @@
-from sys import flags
-from flask import Blueprint, render_template, redirect, request, abort
+from flask import Blueprint, render_template, redirect, request, abort, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from .db import *
 from .forms import *
-
 
 # Hier stehen die URL-Endpunkte/Routes
 
@@ -11,24 +9,19 @@ views = Blueprint("views", __name__, template_folder="templates")
 
 @views.route('/')
 def index():
-    if current_user.is_authenticated: return redirect('home')
-    else: return render_template("index.html")
+    return render_template("home.html")
 
-@views.route('/home')
-@login_required
-def home():
-    return render_template('home.html')
 
 @views.route('/login', methods=['GET', 'POST'])
 def login():
     # login view can be used for login an for confirmation
     if current_user.is_authenticated and not request.args.get("confirm"):  # redirect to home if user is already logged in
-        return redirect("home")
+        return redirect(url_for("views.index"))
     form = LoginForm()
     if form.validate_on_submit():  # if valid data ist send by POST:
         user = User.query.filter_by(username=form.data['user_name']).first()  # query user from db
         login_user(user)
-        return redirect("home")
+        return redirect(url_for("views.index"))
     return render_template('login.html', login_form=form, username_value=request.args.get('confirm'))
 
 @views.route('/register', methods=["GET", "POST"])
@@ -45,6 +38,8 @@ def register():
 @views.route('/profil/<username>', methods=["GET", "POST"])
 def profile(username):
     displayed_user = User.query.filter_by(username=username).first() # Get the users data from the database
+    if not displayed_user:
+        abort(404)
     form = AccountSettings()
     if form.validate_on_submit(): # If form is posted, look for changed data and forward it to the currentuser object
         if form.user_name.data:
@@ -65,7 +60,7 @@ def logout():
     if current_user.is_authenticated:
         logout_user()
         return redirect("/")
-    return render_template('login.html') 
+    return render_template(url_for("views.index")) 
 
 
 @views.route('/routeoverview')
