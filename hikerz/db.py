@@ -1,4 +1,4 @@
-from os import unlink
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import null, nullslast
 

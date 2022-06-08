@@ -56,6 +56,7 @@ def profile(username):
         db.session.commit()
         return redirect(f"/login?confirm={current_user.username}") 
         # Redirect to login view because the login needs to be refreshed after changing the users username (primary key)
+    # displayed_tours = Route.query.filter_by(creator=displayed_user.username).all()
     return render_template("profile.html", form=form, user = displayed_user)
 
 @views.route('/logout')

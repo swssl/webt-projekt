@@ -52,6 +52,22 @@
                             {%endif%}
                         </div>
                     </div>
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5>{{user.username}}s Touren:</h5>
+                            <div class="list-group">
+                                {%for t in displayed_tours%}
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{t.name}}</h5>
+                                        <small>{{t.duration}}</small>
+                                    </div>
+                                    <p class="mb-1">{{t.description[:20]}}...</p>
+                                </a>
+                                {%endfor%}
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- Zweiter Teil der Avatar und Speichern-BUtton enthält -->
                 <div class="col-md-4">
