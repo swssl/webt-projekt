@@ -42,21 +42,45 @@ def logout():
         return redirect("login")
     return render_template('login.html', test_user=test_user) 
 
+def manufactureSampleRoutes():
+    route1 = Route(
+        'Supertreck 2022', 
+        'Dieser Treck ist super!', 
+        './static/routes/example01.gpx',
+        'bild1.jpeg',
+        3,
+        '11.123333290123456', '17.809987653214267')
+    route2 = Route(
+        'Zugspitze', 
+        'Durch das Höllental auf die Zugspitze. Über Höllentalklamm, Gletscher und Klettersteig zum Gipfel. Trittsicherheit, solide Kondition und Schwindelfreiheit sind von Vorteil.', 
+        './static/routes/zugspitze.gpx',
+        'bild3.jpeg',
+        5,
+        '1.123456890123456', '17.809876543214267')
+    route3 = Route(
+        'GR20-E1', 
+        'Der härteste Fernwanderweg Europas - Etappe 1', 
+        './static/routes/gr20_etappe1.gpx',
+        'bild12.jpeg',
+        4,
+        '8.854634646715482', '42.50634681278886')
+    route4 = Route(
+        'Entspannter Spaziergang', 
+        'Zum entspannen', 
+        './static/routes/test03.gpx',
+        'bild5.jpeg',
+        1,
+        '82.851234567715482', '42.50634681278886')
+
+    db.session.add(route1)
+    db.session.add(route2)
+    db.session.add(route3)
+    db.session.add(route4)
+    db.session.commit()
+    print("in db")
 
 @views.route('/routeoverview')
-def routeOverview():
-    
-    #das touren-dictionary muss nachher zu einer db-abfrage geaendert werden
-    touren = {}#dictionary mit tourbezeichnung und pfad zu vorschaubild
-    touren["Tour1"] = "bild1.jpeg"
-    touren["Tour2"] = "bild2.jpeg"
-    touren["Tour3"] = "bild3.jpeg"
-    touren["Tour4"] = "bild4.jpeg"
-    touren["Tour5"] = "bild5.jpeg"
-    touren["Tour6"] = "bild6.jpeg"
-    touren["Tour7"] = "bild7.jpeg"
-    touren["Tour8"] = "bild8.jpeg"
-    touren["Tour9"] = "bild9.jpeg"
+def routeOverview():    
 
     koordinaten = {}
     koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
