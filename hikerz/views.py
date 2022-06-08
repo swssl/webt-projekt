@@ -95,12 +95,27 @@ def adminbereich():
 @views.route('/benutzerLoeschen/<userID>')
 @login_required
 def adminbereichUserDelete(userID):
+    if current_user.rolle != 1:
+        abort(401)
     if current_user.username == userID:#man darf sich nicht selber loeschen
         return redirect('/adminbereich')#auf adminbereich verlinken
 
 
     #benutzer wird aus db geloescht
     User.query.filter(User.username == userID).delete()
+    db.session.commit()
+    
+    return redirect('/adminbereich')#auf adminbereich verlinken
+
+
+@views.route('/benutzerRechteErhoehen/<userID>')
+@login_required
+def adminbereichRechteErhoehen(userID):
+    if current_user.rolle != 1:
+        abort(401)
+
+    #benutzer wird aus db geloescht
+    num_rows_updated = User.query.filter_by(username=userID).update(dict(rolle=1))
     db.session.commit()
     
     return redirect('/adminbereich')#auf adminbereich verlinken
