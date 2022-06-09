@@ -9,8 +9,8 @@
     <table id="example" class="table table-striped" style="width:100%">
         <thead>
             <tr>
-                <th scope="col">Email-Adresse</th>
                 <th scope="col">Benutzername</th>
+                <th scope="col">Email-Adresse</th>
                 <th scope="col">Rolle</th>
                 <th scope="col">Aktion</th>
             </tr>
@@ -18,15 +18,27 @@
         <tbody>
             {% for u in allUsers %}
                 <tr>
-                    <th scope="row">{{ allUsers[u][1] }}</th>
-                    <td>{{ allUsers[u][0] }}</td>
-                    <td>{{ allUsers[u][2] }}</td>
+                    <th scope="row">{{ u.username }}</th>
+                    <td>{{ u.emailAdresse }}</td>
+                    <td>{% if u.rolle == 1 %}
+                            Administrator
+                        {% endif %}
+
+                        {% if u.rolle != 1 %}
+                            Benutzer
+                        {% endif %}
+                    </td>
                     <td>
                         <ul class="list inline m-0">
                             <li class="list-inline-item">
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModalFor{{ allUsers[u][0] }}" data-toggle="tooltip" data-placement="top" title="Benutzer löschen"><i class="fa fa-trash"></i></button>
+                                {% if u.rolle == 1 %}
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModalFor{{ u.username }}" data-toggle="tooltip" data-placement="top" title="Benutzer löschen" disabled><i class="fa fa-trash"></i></button>
+                                {% endif %}
+                                {% if u.rolle != 1 %}
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModalFor{{ u.username }}" data-toggle="tooltip" data-placement="top" title="Benutzer löschen"><i class="fa fa-trash"></i></button>
+                                {% endif %}
 
-                                <div class="modal" id="myModalFor{{ allUsers[u][0] }}">
+                                <div class="modal" id="myModalFor{{ u.username }}">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                         <div class="modal-header">
@@ -34,15 +46,26 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <p>Möchten Sie den Benutzer {{ allUsers[u][0] }} endgültig löschen?</p>
+                                            <p>Möchten Sie den Benutzer {{ u.username }} endgültig löschen?</p>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-primary" onclick="window.location.href = '/benutzerLoeschen//{{ allUsers[u][0] }}';">Löschen</button>
+                                            <button type="button" class="btn btn-primary" onclick="window.location.href = '/benutzerLoeschen//{{ u.username }}';">Löschen</button>
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                                         </div>
                                         </div>
                                     </div>
                                 </div>
+
+                                {% if u.rolle != 1 %}
+
+                                    <button type="button" class="btn btn-primary" onclick="window.location.href='/benutzerRechteErhoehen/{{ u.username }}';" data-toggle="tooltip" data-placement="top" title="Benutzer zu Administrator machen"><i class="fa fa-user-plus" aria-hidden="true"></i></button>
+
+                                {% endif %}
+                                {% if u.rolle == 1 %}
+
+                                    <button type="button" class="btn btn-primary" onclick="window.location.href='/benutzerRechteVerringern/{{ u.username }}';" data-toggle="tooltip" data-placement="top" title="Administratorenrechte des Benutzers entfernen"><i class="fa fa-user-times" aria-hidden="true"></i></button>
+
+                                {% endif %}
 
                             </li>
                         </ul>
@@ -73,7 +96,7 @@
     });
 
     {% for u in allUsers %}
-        $('#myModalFor{{ allUsers[u][0] }}').on('shown.bs.modal', function () {
+        $('#myModalFor{{ u.username }}').on('shown.bs.modal', function () {
         $('#myInput').trigger('focus')
         })
     {% endfor %}
