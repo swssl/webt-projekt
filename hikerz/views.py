@@ -66,46 +66,9 @@ def logout():
         return redirect("/")
     return render_template('login.html') 
 
-def manufactureSampleRoutes():
-    route1 = Route(
-        'Supertreck 2022', 
-        'Dieser Treck ist super!', 
-        './static/routes/example01.gpx',
-        'bild1.jpeg',
-        3,
-        '11.123333290123456', '17.809987653214267')
-    route2 = Route(
-        'Zugspitze', 
-        'Durch das Höllental auf die Zugspitze. Über Höllentalklamm, Gletscher und Klettersteig zum Gipfel. Trittsicherheit, solide Kondition und Schwindelfreiheit sind von Vorteil.', 
-        './static/routes/zugspitze.gpx',
-        'bild3.jpeg',
-        5,
-        '1.123456890123456', '17.809876543214267')
-    route3 = Route(
-        'GR20-E1', 
-        'Der härteste Fernwanderweg Europas - Etappe 1', 
-        './static/routes/gr20_etappe1.gpx',
-        'bild12.jpeg',
-        4,
-        '8.854634646715482', '42.50634681278886')
-    route4 = Route(
-        'Entspannter Spaziergang', 
-        'Zum entspannen', 
-        './static/routes/test03.gpx',
-        'bild5.jpeg',
-        1,
-        '82.851234567715482', '42.50634681278886')
-
-    db.session.add(route1)
-    db.session.add(route2)
-    db.session.add(route3)
-    db.session.add(route4)
-    db.session.commit()
-    print("in db")
 
 @views.route('/routeoverview')
 def routeOverview():    
-
     koordinaten = {}
     koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
     koordinaten["Tour2"] = [8.5266546, 52.0161666 ]
@@ -120,7 +83,7 @@ def routeOverview():
     touren = Route.query.all()
     print(touren)
 
-    return render_template('alleTouren.html', touren=touren, koordinaten=koordinaten)
+    return render_template('alleTouren.html', touren=touren)
 
 @views.route('/routeoverview/tourenInNaehe/<posLon>/<posLat>')
 def aktuellerStandort(posLon, posLat):
@@ -131,7 +94,9 @@ def aktuellerStandort(posLon, posLat):
     print(touren)
 
     koordinaten = {}
-    koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
+    for t in touren:
+        koordinaten[t.name] = [float(t.longitude), float(t.latitude)]
+    """koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
     koordinaten["Tour2"] = [8.5266546, 52.0161666 ]
     koordinaten["Tour3"] = [8.5266346, 52.0164566 ] 
     koordinaten["Tour4"] = [9.5278646, 52.0148666 ]
@@ -139,19 +104,19 @@ def aktuellerStandort(posLon, posLat):
     koordinaten["Tour6"] = [8.5266846, 51.0168266 ] 
     koordinaten["Tour7"] = [8.5286646, 52.0168466 ]
     koordinaten["Tour8"] = [8.5264646, 52.0161666 ]
-    koordinaten["Tour9"] = [8.5366646, 51.0164666 ]
+    koordinaten["Tour9"] = [8.5366646, 51.0164666 ]"""
 
     #naechste routen ermitteln
     naechsteRouten = {"routen": []}
-    for k in koordinaten:
+    for t in touren:
         if len(naechsteRouten["routen"])<1:#noch kein elemt in der liste
-            dist = ((koordinaten[k][0]-float(posLon))**2) + ((koordinaten[k][1]-float(posLat))**2)
-            naechsteRouten["routen"].append({"title":k, "pfad":touren[k], "distanz":dist})
+            dist = ((float(t.longitude)-float(posLon))**2) + ((float(t.latitude)-float(posLat))**2)
+            naechsteRouten["routen"].append({"title":t.name, "pfad":t.previewImage, "distanz":dist})
 
         if len(naechsteRouten["routen"])<6:#liste ist noch nicht voll
-            dist = ((koordinaten[k][0]-float(posLon))**2) + ((koordinaten[k][1]-float(posLat))**2)
+            dist = ((float(t.longitude)-float(posLon))**2) + ((float(t.latitude)-float(posLat))**2)
             #print(naechsteRouten)
-            naechsteRouten["routen"].append({"title":k, "pfad":touren[k], "distanz":dist})#neuen platz am ende einfügen
+            naechsteRouten["routen"].append({"title":t.name, "pfad":t.previewImage, "distanz":dist})
 
             for c,i in enumerate(naechsteRouten["routen"]):#an der passenden stelle der groesse nach sortiert einfuegen
                 if i["distanz"] > dist:
@@ -159,13 +124,13 @@ def aktuellerStandort(posLon, posLat):
                     for j in range(len(naechsteRouten["routen"])-1, c+1, -1):#alle um einen nach hinten verschieben
                         naechsteRouten["routen"][j] = naechsteRouten["routen"][j-1]
 
-                    naechsteRouten["routen"][c] = {"title":k, "pfad":touren[k], "distanz":dist}#an aktuelle position die neue route einfuegen
+                    naechsteRouten["routen"][c] = {"title":t.name, "pfad":t.previewImage, "distanz":dist}#an aktuelle position die neue route einfuegen
 
                     break
         
         else:#liste ist zwar schon voll koennte aber naeher als eine andere route sein
 
-            dist = ((koordinaten[k][0]-float(posLon))**2) + ((koordinaten[k][1]-float(posLat))**2)
+            dist = ((float(t.longitude)-float(posLon))**2) + ((float(t.latitude)-float(posLat))**2)
 
             for c,i in enumerate(naechsteRouten["routen"]):#an der passenden stelle der groesse nach sortiert einfuegen
                 if i["distanz"] > dist:
@@ -173,15 +138,11 @@ def aktuellerStandort(posLon, posLat):
                     for j in range(len(naechsteRouten["routen"])-1, c+1, -1):#alle um einen nach hinten verschieben
                         naechsteRouten["routen"][j] = naechsteRouten["routen"][j-1]
 
-                    naechsteRouten["routen"][c] = {"title":k, "pfad":touren[k], "distanz":dist}#an aktuelle position die neue route einfuegen
+                    naechsteRouten["routen"][c] = {"title":t.name, "pfad":t.previewImage, "distanz":dist}#an aktuelle position die neue route einfuegen
 
                     break
 
     return jsonify(naechsteRouten)
-
-@views.route('/testRoute')
-def testRoute():
-    return "<h1>Testseite</h1>"
 
 
 
