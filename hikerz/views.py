@@ -1,5 +1,5 @@
 from sys import flags
-from flask import Blueprint, render_template, redirect, request, abort
+from flask import Blueprint, render_template, redirect, request, abort, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
 from .db import *
 from .forms import *
@@ -66,10 +66,66 @@ def logout():
         return redirect("/")
     return render_template('login.html') 
 
+def manufactureSampleRoutes():
+    route1 = Route(
+        'Supertreck 2022', 
+        'Dieser Treck ist super!', 
+        './static/routes/example01.gpx',
+        'bild1.jpeg',
+        3,
+        '11.123333290123456', '17.809987653214267')
+    route2 = Route(
+        'Zugspitze', 
+        'Durch das Höllental auf die Zugspitze. Über Höllentalklamm, Gletscher und Klettersteig zum Gipfel. Trittsicherheit, solide Kondition und Schwindelfreiheit sind von Vorteil.', 
+        './static/routes/zugspitze.gpx',
+        'bild3.jpeg',
+        5,
+        '1.123456890123456', '17.809876543214267')
+    route3 = Route(
+        'GR20-E1', 
+        'Der härteste Fernwanderweg Europas - Etappe 1', 
+        './static/routes/gr20_etappe1.gpx',
+        'bild12.jpeg',
+        4,
+        '8.854634646715482', '42.50634681278886')
+    route4 = Route(
+        'Entspannter Spaziergang', 
+        'Zum entspannen', 
+        './static/routes/test03.gpx',
+        'bild5.jpeg',
+        1,
+        '82.851234567715482', '42.50634681278886')
+
+    db.session.add(route1)
+    db.session.add(route2)
+    db.session.add(route3)
+    db.session.add(route4)
+    db.session.commit()
+    print("in db")
 
 @views.route('/routeoverview')
-def routeOverview():
-    
+def routeOverview():    
+
+    koordinaten = {}
+    koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
+    koordinaten["Tour2"] = [8.5266546, 52.0161666 ]
+    koordinaten["Tour3"] = [8.5266346, 52.0164566 ] 
+    koordinaten["Tour4"] = [9.5278646, 52.0148666 ]
+    koordinaten["Tour5"] = [8.5267346, 52.0168466 ]
+    koordinaten["Tour6"] = [8.5266846, 51.0168266 ] 
+    koordinaten["Tour7"] = [8.5286646, 52.0168466 ]
+    koordinaten["Tour8"] = [8.5264646, 52.0161666 ]
+    koordinaten["Tour9"] = [8.5366646, 51.0164666 ]
+
+    touren = Route.query.all()
+    print(touren)
+
+    return render_template('alleTouren.html', touren=touren, koordinaten=koordinaten)
+
+@views.route('/routeoverview/tourenInNaehe/<posLon>/<posLat>')
+def aktuellerStandort(posLon, posLat):
+    #standort = '{"lon":'+str(posLon)+', "lat":'+str(posLat)+'}'
+
     #das touren-dictionary muss nachher zu einer db-abfrage geaendert werden
     touren = {}#dictionary mit tourbezeichnung und pfad zu vorschaubild
     touren["Tour1"] = "bild1.jpeg"
@@ -82,21 +138,54 @@ def routeOverview():
     touren["Tour8"] = "bild8.jpeg"
     touren["Tour9"] = "bild9.jpeg"
 
+    koordinaten = {}
+    koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
+    koordinaten["Tour2"] = [8.5266546, 52.0161666 ]
+    koordinaten["Tour3"] = [8.5266346, 52.0164566 ] 
+    koordinaten["Tour4"] = [9.5278646, 52.0148666 ]
+    koordinaten["Tour5"] = [8.5267346, 52.0168466 ]
+    koordinaten["Tour6"] = [8.5266846, 51.0168266 ] 
+    koordinaten["Tour7"] = [8.5286646, 52.0168466 ]
+    koordinaten["Tour8"] = [8.5264646, 52.0161666 ]
+    koordinaten["Tour9"] = [8.5366646, 51.0164666 ]
 
-    test_user = User("admin", "admin@localhost.org", "admin", 0)
-    
-    """touren = {}
-    touren["Tour1"] = Route("Route1","Dies ist Route 1", "Weg", "bild1.jpeg", 1, 1, 20)
-    touren["Tour2"] = Route("Route2","Dies ist Route 2", "Weg", "bild2.jpeg", 1, 1, 20)
-    touren["Tour3"] = Route("Route3","Dies ist Route 3", "Weg", "bild3.jpeg", 1, 1, 20)
-    touren["Tour4"] = Route("Route4","Dies ist Route 4", "Weg", "bild4.jpeg", 1, 1, 20)
-    touren["Tour5"] = Route("Route5","Dies ist Route 5", "Weg", "bild5.jpeg", 1, 1, 20)
-    touren["Tour6"] = Route("Route6","Dies ist Route 6", "Weg", "bild6.jpeg", 1, 1, 20)
-    touren["Tour7"] = Route("Route7","Dies ist Route 7", "Weg", "bild7.jpeg", 1, 1, 20)
-    touren["Tour8"] = Route("Route8","Dies ist Route 8", "Weg", "bild8.jpeg", 1, 1, 20)
-    touren["Tour9"] = Route("Route9","Dies ist Route 9", "Weg", "bild9.jpeg", 1, 1, 20)"""
+    #naechste routen ermitteln
+    naechsteRouten = {"routen": []}
+    for k in koordinaten:
+        if len(naechsteRouten["routen"])<1:#noch kein elemt in der liste
+            dist = ((koordinaten[k][0]-float(posLon))**2) + ((koordinaten[k][1]-float(posLat))**2)
+            naechsteRouten["routen"].append({"title":k, "pfad":touren[k], "distanz":dist})
 
-    return render_template('alleTouren.html', touren=touren, test_user=test_user)
+        if len(naechsteRouten["routen"])<6:#liste ist noch nicht voll
+            dist = ((koordinaten[k][0]-float(posLon))**2) + ((koordinaten[k][1]-float(posLat))**2)
+            #print(naechsteRouten)
+            naechsteRouten["routen"].append({"title":k, "pfad":touren[k], "distanz":dist})#neuen platz am ende einfügen
+
+            for c,i in enumerate(naechsteRouten["routen"]):#an der passenden stelle der groesse nach sortiert einfuegen
+                if i["distanz"] > dist:
+
+                    for j in range(len(naechsteRouten["routen"])-1, c+1, -1):#alle um einen nach hinten verschieben
+                        naechsteRouten["routen"][j] = naechsteRouten["routen"][j-1]
+
+                    naechsteRouten["routen"][c] = {"title":k, "pfad":touren[k], "distanz":dist}#an aktuelle position die neue route einfuegen
+
+                    break
+        
+        else:#liste ist zwar schon voll koennte aber naeher als eine andere route sein
+
+            dist = ((koordinaten[k][0]-float(posLon))**2) + ((koordinaten[k][1]-float(posLat))**2)
+
+            for c,i in enumerate(naechsteRouten["routen"]):#an der passenden stelle der groesse nach sortiert einfuegen
+                if i["distanz"] > dist:
+
+                    for j in range(len(naechsteRouten["routen"])-1, c+1, -1):#alle um einen nach hinten verschieben
+                        naechsteRouten["routen"][j] = naechsteRouten["routen"][j-1]
+
+                    naechsteRouten["routen"][c] = {"title":k, "pfad":touren[k], "distanz":dist}#an aktuelle position die neue route einfuegen
+
+                    break
+
+    return jsonify(naechsteRouten)
 
 @views.route('/testRoute')
 def testRoute():
