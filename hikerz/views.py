@@ -102,17 +102,9 @@ def routeOverview():
 def aktuellerStandort(posLon, posLat):
     #standort = '{"lon":'+str(posLon)+', "lat":'+str(posLat)+'}'
 
-    #das touren-dictionary muss nachher zu einer db-abfrage geaendert werden
-    touren = {}#dictionary mit tourbezeichnung und pfad zu vorschaubild
-    touren["Tour1"] = "bild1.jpeg"
-    touren["Tour2"] = "bild2.jpeg"
-    touren["Tour3"] = "bild3.jpeg"
-    touren["Tour4"] = "bild4.jpeg"
-    touren["Tour5"] = "bild5.jpeg"
-    touren["Tour6"] = "bild6.jpeg"
-    touren["Tour7"] = "bild7.jpeg"
-    touren["Tour8"] = "bild8.jpeg"
-    touren["Tour9"] = "bild9.jpeg"
+    #touren aus db holen
+    touren = Route.query.all()
+    print(touren)
 
     koordinaten = {}
     koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
