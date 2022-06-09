@@ -1,3 +1,4 @@
+from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, EqualTo, Email, InputRequired
@@ -43,3 +44,22 @@ class RegistrationForm(FlaskForm):
             return False
         return True
         
+
+class AccountSettings(FlaskForm):
+    user_name = StringField('Benutzername')
+    email = StringField(
+        'E-Mail Addresse', validators=[Email("Bitte überprüfe die E-Mail-Adresse")])
+    # old_password = PasswordField('Altes Passwort', validators=[DataRequired()])
+    new_password = PasswordField('Neues Passwort', [
+        EqualTo('confirm_password', message='Die Passwörter stimmen nicht überein')
+    ])
+    confirm_password = PasswordField('Passwort bestätigen')
+    submit = SubmitField("Änderungen speichern")
+
+    def validate(self):
+        if not super().validate():
+            return False
+        if self.user_name.data != current_user.username and User.query.filter_by(username=self.user_name.data).first():
+            self.user_name.errors.append("Der Benutzername ist bereits vergeben.")
+            return False
+        return True

@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, redirect, request, jsonify
+from sys import flags
+from flask import Blueprint, render_template, redirect, request, abort, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
 from .db import *
 from .forms import *
@@ -8,39 +9,62 @@ from .forms import *
 
 views = Blueprint("views", __name__, template_folder="templates")
 
-@views.route('/hello')
+@views.route('/')
 def index():
-    return render_template('base.html')
+    if current_user.is_authenticated: return redirect('home')
+    else: return render_template("index.html")
+
+@views.route('/home')
+@login_required
+def home():
+    return render_template('home.html')
 
 @views.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:  # redirect to home if user is already logged in
-        return redirect("hello")
+    # login view can be used for login an for confirmation
+    if current_user.is_authenticated and not request.args.get("confirm"):  # redirect to home if user is already logged in
+        return redirect("home")
     form = LoginForm()
     if form.validate_on_submit():  # if valid data ist send by POST:
-        user = User.query.get(form.data['user_name'])  # query user from db
+        user = User.query.filter_by(username=form.data['user_name']).first()  # query user from db
         login_user(user)
-        return redirect("hello")
-    return render_template('login.html', login_form=form)
+        return redirect("home")
+    return render_template('login.html', login_form=form, username_value=request.args.get('confirm'))
 
 @views.route('/register', methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         new_user = User(form.data['user_name'],
-                        form.data["email"], form.data["password"], 1) # create new user
+                        form.data["email"], form.data["password"], 0) # create new user
         db.session.add(new_user)
         db.session.commit()     # write new user to db
         return redirect("login")
     return render_template('register.html', registration_form=form)
+
+@views.route('/profil/<username>', methods=["GET", "POST"])
+def profile(username):
+    displayed_user = User.query.filter_by(username=username).first() # Get the users data from the database
+    form = AccountSettings()
+    if form.validate_on_submit(): # If form is posted, look for changed data and forward it to the currentuser object
+        if form.user_name.data:
+            current_user.username = form.user_name.data
+        if form.email.data:
+            current_user.emailAdresse = form.email.data
+        if form.new_password.data:
+            current_user.password = form.new_password.data
+        db.session.commit()
+        return redirect(f"/login?confirm={current_user.username}") 
+        # Redirect to login view because the login needs to be refreshed after changing the users username (primary key)
+    return render_template("profile.html", form=form, user = displayed_user)
 
 @views.route('/logout')
 @login_required
 def logout():
     if current_user.is_authenticated:
         logout_user()
-        return redirect("login")
-    return render_template('login.html', test_user=test_user) 
+        return redirect("/")
+    return render_template('login.html') 
 
 def manufactureSampleRoutes():
     route1 = Route(
@@ -170,27 +194,62 @@ def testRoute():
 
 
 @views.route('/adminbereich')
+@login_required
 def adminbereich():
-    test_user = User("admin", "admin@localhost.org", "admin", 0)
-    allUsers = {"user1":["Test1","1@1.de","admin"], "user2":["Test2","2@2.de","user"],"user3":["Test3","3@3.de","user"],"user4":["Test4","4@4.de","user"],"user5":["Test5","5@5.de","user"],"user6":["Test6","6@6.de","user"],"user7":["Test7","7@7.de","user"],"user8":["Test8","8@8.de","user"],"user9":["Test9","9@9.de","user"],"user10":["Test10","10@10.de","user"],"user11":["Test11","11@11.de","admin"], "user12":["Test12","12@12.de","user"],"user13":["Test13","13@13.de","user"],"user14":["Test14","14@41.de","user"],"user15":["Test15","15@51.de","user"],"user16":["Test16","16@16.de","user"],"user17":["Test17","71@17.de","user"],"user8":["Test18","18@18.de","user"],"user19":["Test19","91@19.de","user"],"user20":["Test20","20@20.de","user"]}
-    return render_template("adminArea.html", allUsers=allUsers, test_user=test_user)
+    if current_user.rolle != 1:
+        abort(401)
+    allUsers = User.query.all() 
+    #test_user = User("admin", "admin@localhost.org", "admin", 0)
+    
+    return render_template("adminArea.html", allUsers=allUsers)
 
 
 @views.route('/benutzerLoeschen/<userID>')
+@login_required
 def adminbereichUserDelete(userID):
-    print("Benutzer der geloescht werden soll:",userID)
+    if current_user.rolle == 1 and current_user.username == userID:#ein Admin darf sich nicht selber loeschen
+        return redirect('/adminbereich')
+    elif current_user.rolle == 1 and User.query.filter(User.username == userID).first().rolle == 1:#ein Admin darf keinen anderen Admin loeschen
+        return redirect('/adminbereich')
+    elif current_user.username == userID:#man darf sich selber ohne Adminrechte loeschen
+        User.query.filter(User.username == userID).delete()
+        db.session.commit()
+        return redirect('/')#auf homepage verlinken
+    elif current_user.rolle == 1:#ein Admin will einen normalen User loeschen
+        #benutzer wird aus db geloescht
+        User.query.filter(User.username == userID).delete()
+        db.session.commit()    
+        return redirect('/adminbereich')#auf adminbereich verlinken
+    else:#ein nicht Admin will loeschen
+        abort(401)
 
-    #loesch logik muss angepasst werden
-    allUsers = {"user1":["Test1","1@1.de","admin"], "user2":["Test2","2@2.de","user"],"user3":["Test3","3@3.de","user"],"user4":["Test4","4@4.de","user"],"user5":["Test5","5@5.de","user"],"user6":["Test6","6@6.de","user"],"user7":["Test7","7@7.de","user"],"user8":["Test8","8@8.de","user"],"user9":["Test9","9@9.de","user"],"user10":["Test10","10@10.de","user"],"user11":["Test11","11@11.de","admin"], "user12":["Test12","12@12.de","user"],"user13":["Test13","13@13.de","user"],"user14":["Test14","14@41.de","user"],"user15":["Test15","15@51.de","user"],"user16":["Test16","16@16.de","user"],"user17":["Test17","71@17.de","user"],"user8":["Test18","18@18.de","user"],"user19":["Test19","91@19.de","user"],"user20":["Test20","20@20.de","user"]}
-    loeschUser = None
-    for u in allUsers:
-        if allUsers[u][0] == userID:
-            loeschUser = u
-    if loeschUser is not None:
-        del allUsers[loeschUser]
+@views.route('/benutzerRechteErhoehen/<userID>')
+@login_required
+def adminbereichRechteErhoehen(userID):
+    if current_user.rolle != 1:
+        abort(401)
 
-    test_user = User("admin", "admin@localhost.org", "admin", 0)
+    #benutzer wird geupdated
+    num_rows_updated = User.query.filter_by(username=userID).update(dict(rolle=1))
+    db.session.commit()
     
-    return render_template("adminArea.html", allUsers=allUsers, test_user=test_user)
+    return redirect('/adminbereich')#auf adminbereich verlinken
+
+
+
+@views.route('/benutzerRechteVerringern/<userID>')
+@login_required
+def adminbereichRechteVerringern(userID):
+    if current_user.rolle != 1:
+        abort(401)
+
+    if current_user.username == userID:#man darf sich nicht selber die rechte wegnehmen
+        return redirect('/adminbereich')#sonst koennten alle admins geloescht werden
+
+    #benutzer wird aus db geloescht
+    num_rows_updated = User.query.filter_by(username=userID).update(dict(rolle=0))
+    db.session.commit()
+    
+    return redirect('/adminbereich')#auf adminbereich verlinken
 
 
