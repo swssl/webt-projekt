@@ -1,9 +1,7 @@
-from os import unlink
+
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import null, nullslast
 
 db = SQLAlchemy()
-#db.create_all()
 
 
 # In dieser Datei liegen die Datenbankklassen
@@ -16,6 +14,10 @@ class User(db.Model):
     password = db.Column(db.String(45), nullable=False)
     rolle = db.Column(db.Integer(),  nullable=False)
     isLoggedIn = db.Column(db.Boolean, nullable=False, default=False)
+    creatorOfRoute = db.relationship('Route', back_populates='creator')
+    creatorOfHighlight = db.relationship('Highlight', back_populates='creator')
+    creatorOfRouteImage = db.relationship('RouteImage', back_populates='creator')
+    creatorOfReview = db.relationship('Review', back_populates='creator')
 
     def __init__(self, username, emailAdresse, password, rolle) -> None:
         super().__init__()
@@ -38,7 +40,8 @@ class User(db.Model):
         return self.username
 
     def __repr__(self):
-        return f"<User {self.benutzername} {self.username}>"
+        return f"<User {self.username}>"
+
 
 class Route(db.Model):
     __tablename__ = 'Route'
@@ -46,16 +49,21 @@ class Route(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(45), nullable=False, default='Neue Route')
     description = db.Column(db.String(1024), nullable=False)
-    trail = db.Column(db.String(45), nullable=False) # TODO: check what the correct data type is
+    trail = db.Column(db.String(45), nullable=False)
     previewImage = db.Column(db.String(255), nullable=False, default='PathToDefaultImage')
     technicalDifficulty = db.Column(db.Integer(), nullable=True)
     stamina = db.Column(db.Integer(), nullable=True)
+    distance = db.Column(db.Integer(), nullable=False) # distance in meters
     duration = db.Column(db.Integer(), nullable=True) # could be calculated from the length of the trail and the average hiking speed
+    startLon = db.Column(db.String(15), nullable=False)
+    startLat = db.Column(db.String(15), nullable=False)
+    creator = db.Column(db.String(45), db.ForeignKey('User.username'))
+    creatorRelationship = db.relationship('User', back_populates='creator')
     highlightInRoute = db.relationship('HighlightInRoute', back_populates='route')
     routeImage = db.relationship('RouteImage', back_populates='route')
     tagOfRoute = db.relationship('TagOfRoute', back_populates='route')
 
-    def __init__(self, name, description, trail, previewImage, technicalDifficulty, stamina, duration) -> None:
+    def __init__(self, name, description, trail, previewImage, technicalDifficulty, stamina, distance, duration, startLon, startLat, creator) -> None:
         super().__init__()
         self.name = name
         self.description = description
@@ -63,7 +71,11 @@ class Route(db.Model):
         self.previewImage = previewImage
         self.technicalDifficulty = technicalDifficulty
         self.stamina = stamina
+        self.distance = distance
         self.duration = duration
+        self.startLon = startLon
+        self.startLat = startLat
+        self.creator = creator
 
     def __repr__(self):
         return f'<Route \
@@ -73,7 +85,11 @@ class Route(db.Model):
             "previewImage" {self.previewImage}, \
             "technicalDifficulty" {self.technicalDifficulty}, \
             "stamina" {self.stamina}, \
-            "duration" {self.duration}>'
+            "distance" {self.distance},\
+            "duration" {self.duration}, \
+            "startLon" {self.startLon}, \
+            "startLat" {self.startLat}, \
+            "creator" {self.creator}>'
 
 
 class Highlight(db.Model):
@@ -82,33 +98,40 @@ class Highlight(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(45), nullable=False, default='Neues Highlight')
     description = db.Column(db.String(1024), nullable=True)
-    coordinates = db.Column(db.String(64), nullable=False) # TODO: check how to best store coordinates
     previewImage = db.Column(db.String(255), nullable=False, default='PathToDefaultImage')
+    latitude =  db.Column(db.String(15), nullable=False)
+    longitude = db.Column(db.String(15), nullable=False)
+    creator = db.Column(db.String(45), db.ForeignKey('User.username'))
+    creatorRelationship = db.relationship('User', back_populates='creator')
     highlightInRoute = db.relationship('HighlightInRoute', back_populates='highlight')
     highlightImage = db.relationship('HighlighImage', back_populates='highlight')
 
-    def __init__(self, name, description, coordinates, previewImage) -> None:
+    def __init__(self, name, description, previewImage, latitude, longitude, creator) -> None:
         super().__init__()
         self.name = name
         self.description = description
-        self.coordinates = coordinates
         self.previewImage = previewImage
+        self.latitude = latitude
+        self.longitude = longitude
+        self.creator = creator
 
     def __repr__(self) -> str:
         return f'<Highlight \
-        "name" {self.name}, \
-        "description" {self.description}, \
-        "coordinates" {self.coordinates}, \
-        "previewImage" {self.previewImage}>'
+            "name" {self.name}, \
+            "description" {self.description}, \
+            "previewImage" {self.previewImage}, \
+            "latitude" {self.latitude}, \
+            "longitude" {self.longitude}, \
+            "creator" {self.creator}>'
 
 
 class HighlightInRoute(db.Model):
     __tablename__ = 'HighlightInRoute'
 
     id = db.Column(db.Integer(), primary_key=True)
-    routeId = db.Column(db.Integer(), db.ForeignKey('route.id'))
+    routeId = db.Column(db.Integer(), db.ForeignKey('Route.id'))
     route = db.relationship('Route', back_populates='highlightInRoute')
-    highlightId = db.Column(db.Integer(), db.ForeignKey('highlight.id'))
+    highlightId = db.Column(db.Integer(), db.ForeignKey('Highlight.id'))
     highlight = db.relationship('Highlight', back_populates='highlightInRoute')
 
     def __init__(self, routeId, highlightId) -> None:
@@ -121,30 +144,35 @@ class HighlightInRoute(db.Model):
             "routeId" {self.routeId}, \
             "highlightId" {self.highlightId}>'
 
+
 class RouteImage(db.Model):
     __tablename__ = 'RouteImages'
 
     id = db.Column(db.Integer(), primary_key=True)
-    routeId = db.Column(db.Integer(), db.ForeignKey('route.id'))
+    routeId = db.Column(db.Integer(), db.ForeignKey('Route.id'))
     route = db.relationship('Route', back_populates='routeImage')
     image = db.Column(db.String(255), nullable=False)
+    creator = db.Column(db.String(45), db.ForeignKey('User.username'))
+    creatorRelationship = db.relationship('User', back_populates='creator')
 
-    def __init__(self, routeId, image) -> None:
+    def __init__(self, routeId, image, creator) -> None:
         super().__init__()
         self.routeId = routeId
         self.image = image
+        self.creator = creator
     
     def __repr__(self) -> str:
         return f'<RouteImage \
             "routeId" {self.routeId}, \
-            "image" {self.image}>'
+            "image" {self.image}, \
+            "creator" {self.creator}>'
 
 
 class HighlightImage(db.Model):
     __tablename__ = 'HighlightImage'
 
     id = db.Column(db.Integer(), primary_key=True)
-    highlightId = db.Column(db.Integer(), db.ForeignKey('highlight.id'))
+    highlightId = db.Column(db.Integer(), db.ForeignKey('Highlight.id'))
     highlight = db.relationship('Highlight', back_populates='highlightImage')
     image = db.Column(db.String(255), nullable=False)
 
@@ -164,7 +192,7 @@ class TagOfRoute(db.Model):
 
     id = db.Column(db.Integer(), primary_key=True)
     tag = db.Column(db.String(45), nullable=False, default='Default Tag')
-    routeId = db.Column(db.Integer(), db.ForeignKey('route.id'))
+    routeId = db.Column(db.Integer(), db.ForeignKey('Route.id'))
     route = db.relationship('Route', back_populates='tagOfRoute')
 
     def __init__(self, tag, routeId) -> None:
@@ -186,27 +214,31 @@ class Review(db.Model):
     review = db.Column(db.String(1024), nullable=False)
     rating = db.Column(db.Integer(), nullable=False) # 1-10
     helpful = db.Column(db.Integer(), nullable=False) # count of up-/downvotes
+    creator = db.Column(db.String(45), db.ForeignKey('User.username'))
+    creatorRelationship = db.relationship('User', back_populates='creator')
     reviewImage = db.relationship('ReviewImage', back_populates='review')
 
-    def __init__(self, topic, review, rating, helpful) -> None:
+    def __init__(self, topic, review, rating, helpful, creator) -> None:
         super().__init__()
         self.topic = topic
         self.review = review
         self.rating = rating
         self.helpful = helpful
+        self.creator = creator
 
     def __repr__(self) -> str:
         return f'<Review \
         "topic" {self.topic}, \
         "review" {self.review}, \
         "rating" {self.rating}, \
-        "helpful" {self.helpful}>'
+        "helpful" {self.helpful}, \
+        "creator" {self.creator}>'
 
 class ReviewImage(db.Model):
     __tablename__ = 'ReviewImage'
 
     id = db.Column(db.Integer(), primary_key=True)
-    reviewId = db.Column(db.Integer(), db.ForeignKey('review.id'))
+    reviewId = db.Column(db.Integer(), db.ForeignKey('Review.id'))
     review = db.relationship('Review', back_populates='reviewImage')
     image = db.Column(db.String(255), nullable=False)
 
