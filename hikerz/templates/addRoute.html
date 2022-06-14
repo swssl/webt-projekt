@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1 align="center">Neue Route hinzufügen</h1>
+
+    <div>
+        <form action="" method="post">
+            {{addRouteForm.csrf_token}}
+            <div class="row">
+                <div class="col">
+                    {{addRouteForm.name.label(class="form-label")}}
+                    {{addRouteForm.name(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{addRouteForm.description.label(class="form-label")}}
+                    {{addRouteForm.description(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{addRouteForm.trail.label(class="form-label")}}
+                    {{addRouteForm.trail(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{addRouteForm.previewImage.label(class="form-label")}}
+                    {{addRouteForm.previewImage(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{addRouteForm.technicalDifficulty.label(class="form-label")}}
+                    {{addRouteForm.technicalDifficulty(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{addRouteForm.stamina.label(class="form-label")}}
+                    {{addRouteForm.stamina(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{addRouteForm.distance.label(class="form-label")}}
+                    {{addRouteForm.distance(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{addRouteForm.duration.label(class="form-label")}}
+                    {{addRouteForm.duration(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                {% if addRouteForm.errors != {} and request.method != "GET" %}
+                {% for field, msg in addRouteForm.errors.items() %}
+                <div class="alert alert-danger" role="alert">{{ msg[0] }}</div>
+                {% endfor %}
+                {% endif %}
+                <div class="col text-center">
+                    {{addRouteForm.submit(class="btn", style="background-color: var(--farbe2)")}}
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+{% endblock %}

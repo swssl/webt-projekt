@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1 align="center">Routendetails</h1>
+
+    <h2></h2>
+    <div>
+        <form action="" method="post">
+            {{routeDetailsForm.csrf_token}}
+            <div class="row">
+                <div class="col">
+                    {{routeDetailsForm.name.label(class="form-label")}}
+                    {{routeDetailsForm.name(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{routeDetailsForm.description.label(class="form-label")}}
+                    {{routeDetailsForm.description(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{routeDetailsForm.trail.label(class="form-label")}}
+                    {{routeDetailsForm.trail(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{routeDetailsForm.previewImage.label(class="form-label")}}
+                    {{routeDetailsForm.previewImage(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{routeDetailsForm.technicalDifficulty.label(class="form-label")}}
+                    {{routeDetailsForm.technicalDifficulty(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{routeDetailsForm.stamina.label(class="form-label")}}
+                    {{routeDetailsForm.stamina(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{routeDetailsForm.distance.label(class="form-label")}}
+                    {{routeDetailsForm.distance(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{routeDetailsForm.duration.label(class="form-label")}}
+                    {{routeDetailsForm.duration(class="form-control")}}
+                </div>
+            </div>
+            <div class="row">
+                {% if routeDetailsForm.errors != {} and request.method != "GET" %}
+                {% for field, msg in routeDetailsForm.errors.items() %}
+                <div class="alert alert-danger" role="alert">{{ msg[0] }}</div>
+                {% endfor %}
+                {% endif %}
+                <div class="col text-center">
+                    {{routeDetailsForm.submit(class="btn", style="background-color: var(--farbe2)")}}
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+{% endblock %}

@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, request
-from db import User
-from forms import *
+from flask_login import login_required
+from hikerz.db import *
+from hikerz.forms import *
 
 
 # Hier stehen die URL-Endpunkte/Routes
@@ -60,7 +61,74 @@ def adminbereich():
     return render_template("adminArea.html", allUsers=allUsers, test_user=test_user)
 
 
-@views.route('/addTour')
-def addTour():
-    return render_template('addTour.html') # maybe pass the users current location as default position (+ also pass the user)
+@views.route('/addRoute')
+@login_required
+def addRoute():
+    form = AddRouteForm()
+
+    if form.validate_on_submit():
+        newRoute = Route(
+            form.data['name'],
+            form.data['description'],
+            form.data['trail'],
+            form.data['previewImage'],
+            form.data['technicalDifficulty'],
+            form.data['stamina'],
+            form.data['distance'],
+            form.data['duration'],
+            form.data['creator'])
+        
+        db.session.add(newRoute)
+        db.session.commit()
+
+        return redirect('alleTouren.html')
+
+    return render_template('addRoute.html', addRouteForm=form) # maybe pass the users current location as default position (+ also pass the user)
+
+
+@views.route('/routeDetails')
+def routeDetails():
+    """
+    If user is logged in, then editing should be enabled (if this route is created by this user).
+    If this route is not created by the user, then rating/commenting is possible
+    If user is not logged in, only viewing is possible.
+    """
+    route = Route.query.all.first()
+    return render_template('routeDetails.html', route=route)
+
+def manufactureSampleRoutes():
+    route1 = Route(
+        'Supertreck 2022', 
+        'Dieser Treck ist super!', 
+        './static/routes/example01.gpx',
+        './static/vorschaubilder/bild1.jpeg',
+        3, 5, 6500, 150,
+        '11.123333290123456', '17.809987653214267')
+    route2 = Route(
+        'Zugspitze', 
+        'Durch das Höllental auf die Zugspitze. Über Höllentalklamm, Gletscher und Klettersteig zum Gipfel. Trittsicherheit, solide Kondition und Schwindelfreiheit sind von Vorteil.', 
+        './static/routes/zugspitze.gpx',
+        './static/vorschaubilder/zugspitze1.jpeg',
+        5, 9, 19000, 700,
+        '1.123456890123456', '17.809876543214267')
+    route3 = Route(
+        'GR20-E1', 
+        'Der härteste Fernwanderweg Europas - Etappe 1', 
+        './static/routes/gr20_etappe1.gpx',
+        './static/vorschaubilder/bild12.jpeg',
+        4, 7, 10000, 300,
+        '8.854634646715482', '42.50634681278886')
+    route4 = Route(
+        'Entspannter Spaziergang', 
+        'Zum entspannen', 
+        './static/routes/test03.gpx',
+        './static/vorschaubilder/bild5.jpeg',
+        1, 2, 3500, 60,
+        '82.851234567715482', '42.50634681278886')
+
+    db.session.add(route1)
+    db.session.add(route2)
+    db.session.add(route3)
+    db.session.add(route4)
+    db.session.commit()
     

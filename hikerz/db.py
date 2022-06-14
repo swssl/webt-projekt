@@ -14,10 +14,10 @@ class User(db.Model):
     password = db.Column(db.String(45), nullable=False)
     rolle = db.Column(db.Integer(),  nullable=False)
     isLoggedIn = db.Column(db.Boolean, nullable=False, default=False)
-    creatorOfRoute = db.relationship('Route', back_populates='creator')
-    creatorOfHighlight = db.relationship('Highlight', back_populates='creator')
-    creatorOfRouteImage = db.relationship('RouteImage', back_populates='creator')
-    creatorOfReview = db.relationship('Review', back_populates='creator')
+    creatorOfRoute = db.relationship('Route', back_populates='creatorRelationship')
+    creatorOfHighlight = db.relationship('Highlight', back_populates='creatorRelationship')
+    creatorOfRouteImage = db.relationship('RouteImage', back_populates='creatorRelationship')
+    creatorOfReview = db.relationship('Review', back_populates='creatorRelationship')
 
     def __init__(self, username, emailAdresse, password, rolle) -> None:
         super().__init__()
@@ -58,7 +58,7 @@ class Route(db.Model):
     startLon = db.Column(db.String(15), nullable=False)
     startLat = db.Column(db.String(15), nullable=False)
     creator = db.Column(db.String(45), db.ForeignKey('User.username'))
-    creatorRelationship = db.relationship('User', back_populates='creator')
+    creatorRelationship = db.relationship('User', back_populates='creatorOfRoute')
     highlightInRoute = db.relationship('HighlightInRoute', back_populates='route')
     routeImage = db.relationship('RouteImage', back_populates='route')
     tagOfRoute = db.relationship('TagOfRoute', back_populates='route')
@@ -102,9 +102,9 @@ class Highlight(db.Model):
     latitude =  db.Column(db.String(15), nullable=False)
     longitude = db.Column(db.String(15), nullable=False)
     creator = db.Column(db.String(45), db.ForeignKey('User.username'))
-    creatorRelationship = db.relationship('User', back_populates='creator')
+    creatorRelationship = db.relationship('User', back_populates='creatorOfHighlight')
     highlightInRoute = db.relationship('HighlightInRoute', back_populates='highlight')
-    highlightImage = db.relationship('HighlighImage', back_populates='highlight')
+    highlightImage = db.relationship('HighlightImage', back_populates='highlight')
 
     def __init__(self, name, description, previewImage, latitude, longitude, creator) -> None:
         super().__init__()
@@ -130,8 +130,8 @@ class HighlightInRoute(db.Model):
 
     id = db.Column(db.Integer(), primary_key=True)
     routeId = db.Column(db.Integer(), db.ForeignKey('Route.id'))
-    route = db.relationship('Route', back_populates='highlightInRoute')
     highlightId = db.Column(db.Integer(), db.ForeignKey('Highlight.id'))
+    route = db.relationship('Route', back_populates='highlightInRoute')
     highlight = db.relationship('Highlight', back_populates='highlightInRoute')
 
     def __init__(self, routeId, highlightId) -> None:
@@ -150,10 +150,10 @@ class RouteImage(db.Model):
 
     id = db.Column(db.Integer(), primary_key=True)
     routeId = db.Column(db.Integer(), db.ForeignKey('Route.id'))
-    route = db.relationship('Route', back_populates='routeImage')
     image = db.Column(db.String(255), nullable=False)
     creator = db.Column(db.String(45), db.ForeignKey('User.username'))
-    creatorRelationship = db.relationship('User', back_populates='creator')
+    route = db.relationship('Route', back_populates='routeImage')
+    creatorRelationship = db.relationship('User', back_populates='creatorOfRouteImage')
 
     def __init__(self, routeId, image, creator) -> None:
         super().__init__()
@@ -172,9 +172,9 @@ class HighlightImage(db.Model):
     __tablename__ = 'HighlightImage'
 
     id = db.Column(db.Integer(), primary_key=True)
+    image = db.Column(db.String(255), nullable=False)
     highlightId = db.Column(db.Integer(), db.ForeignKey('Highlight.id'))
     highlight = db.relationship('Highlight', back_populates='highlightImage')
-    image = db.Column(db.String(255), nullable=False)
 
     def __init__(self, highlightId, image) -> None:
         super().__init__()
@@ -215,7 +215,7 @@ class Review(db.Model):
     rating = db.Column(db.Integer(), nullable=False) # 1-10
     helpful = db.Column(db.Integer(), nullable=False) # count of up-/downvotes
     creator = db.Column(db.String(45), db.ForeignKey('User.username'))
-    creatorRelationship = db.relationship('User', back_populates='creator')
+    creatorRelationship = db.relationship('User', back_populates='creatorOfReview')
     reviewImage = db.relationship('ReviewImage', back_populates='review')
 
     def __init__(self, topic, review, rating, helpful, creator) -> None:
@@ -238,9 +238,9 @@ class ReviewImage(db.Model):
     __tablename__ = 'ReviewImage'
 
     id = db.Column(db.Integer(), primary_key=True)
+    image = db.Column(db.String(255), nullable=False)
     reviewId = db.Column(db.Integer(), db.ForeignKey('Review.id'))
     review = db.relationship('Review', back_populates='reviewImage')
-    image = db.Column(db.String(255), nullable=False)
 
     def __init__(self, reviewId, image) -> None:
         super().__init__()
