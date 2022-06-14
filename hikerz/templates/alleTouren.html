@@ -43,9 +43,9 @@
                     <div class="card-header">
                         <h3> {{ t.name }} </h3>
                     </div>
-                    <img class="card-img" src="./../static/vorschaubilder/{{ t.previewImage }}" alt="Card image">
+                    <img class="card-img" src="./.{{ t.previewImage }}" alt="Card image">
                     <div class="card-footer">
-                        <a href="/testRoute" class="btn btn-primary stretched-link">Mehr Details</a>
+                        <a href="/routeDetails/{{ t.id }}" class="btn btn-primary stretched-link">Mehr Details</a>
                     </div>
                 </div>
 
@@ -119,13 +119,13 @@
 
     
     /* einzelne Markierungen setzen */
-    {% for k in koordinaten %}
+    {% for t in touren %}
 
-        var lonLat_{{ k }} = new OpenLayers.LonLat( {{ koordinaten[k][0] }}, {{ koordinaten[k][1] }} )
+        var lonLat_{{ t.id }} = new OpenLayers.LonLat( {{ t.longitude }}, {{ t.latitude }} )
             .transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()   );
-        var {{ k }} = new OpenLayers.Marker( lonLat_{{ k }} );
-        {{ k }}.events.register("click", map, function(e) { location.href = "/testRoute"  });
-        markers.addMarker({{ k }});
+        var marker_{{ t.id }} = new OpenLayers.Marker( lonLat_{{ t.id }} );
+        marker_{{ t.id }}.events.register("click", map, function(e) { location.href = "/routeDetails/{{ t.id }}"  });
+        markers.addMarker(marker_{{ t.id }});
 
 
     {% endfor %}
