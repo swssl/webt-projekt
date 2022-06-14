@@ -13,7 +13,6 @@ class User(db.Model):
     emailAdresse = db.Column(db.String(45), nullable=False, unique=True)
     password = db.Column(db.String(45), nullable=False)
     rolle = db.Column(db.Integer(),  nullable=False)
-    isLoggedIn = db.Column(db.Boolean, nullable=False, default=False)
     creatorOfRoute = db.relationship('Route', back_populates='creatorRelationship')
     creatorOfHighlight = db.relationship('Highlight', back_populates='creatorRelationship')
     creatorOfRouteImage = db.relationship('RouteImage', back_populates='creatorRelationship')
@@ -25,13 +24,12 @@ class User(db.Model):
         self.emailAdresse = emailAdresse
         self.password = password
         self.rolle = rolle
-        self.isLoggedIn = False
 
     def is_active(self):
         return True
 
     def is_authenticated(self):
-        return self.isLoggedIn
+        return True
 
     def is_anonymous(self):
         return False
@@ -123,7 +121,6 @@ class Highlight(db.Model):
             "latitude" {self.latitude}, \
             "longitude" {self.longitude}, \
             "creator" {self.creator}>'
-
 
 class HighlightInRoute(db.Model):
     __tablename__ = 'HighlightInRoute'
@@ -251,4 +248,4 @@ class ReviewImage(db.Model):
         return f'<ReviewImage \
         "reviewId" {self.reviewId}, \
         "image" {self.image}>'
-    
+
