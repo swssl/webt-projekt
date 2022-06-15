@@ -60,6 +60,7 @@ class Route(db.Model):
     highlightInRoute = db.relationship('HighlightInRoute', back_populates='route')
     routeImage = db.relationship('RouteImage', back_populates='route')
     tagOfRoute = db.relationship('TagOfRoute', back_populates='route')
+    review = db.relationship('Review', back_populates='route')
 
     def __init__(self, name, description, trail, previewImage, technicalDifficulty, stamina, distance, duration, startLon, startLat, creator) -> None:
         super().__init__()
@@ -212,6 +213,8 @@ class Review(db.Model):
     rating = db.Column(db.Integer(), nullable=False) # 1-10
     helpful = db.Column(db.Integer(), nullable=False) # count of up-/downvotes
     creator = db.Column(db.String(45), db.ForeignKey('User.username'))
+    routeId = db.Column(db.Integer(), db.ForeignKey('Route.id'))
+    route = db.relationship('Route', back_populates='review')
     creatorRelationship = db.relationship('User', back_populates='creatorOfReview')
     reviewImage = db.relationship('ReviewImage', back_populates='review')
 
@@ -230,6 +233,7 @@ class Review(db.Model):
         "rating" {self.rating}, \
         "helpful" {self.helpful}, \
         "creator" {self.creator}>'
+
 
 class ReviewImage(db.Model):
     __tablename__ = 'ReviewImage'
