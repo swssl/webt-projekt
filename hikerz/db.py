@@ -53,8 +53,8 @@ class Route(db.Model):
     stamina = db.Column(db.Integer(), nullable=True)
     distance = db.Column(db.Integer(), nullable=False) # distance in meters
     duration = db.Column(db.Integer(), nullable=True) # could be calculated from the length of the trail and the average hiking speed
-    startLon = db.Column(db.String(15), nullable=False)
-    startLat = db.Column(db.String(15), nullable=False)
+    longitude = db.Column(db.String(15), nullable=False)
+    latitude = db.Column(db.String(15), nullable=False)
     creator = db.Column(db.String(45), db.ForeignKey('User.username'))
     creatorRelationship = db.relationship('User', back_populates='creatorOfRoute')
     highlightInRoute = db.relationship('HighlightInRoute', back_populates='route')
@@ -62,7 +62,7 @@ class Route(db.Model):
     tagOfRoute = db.relationship('TagOfRoute', back_populates='route')
     review = db.relationship('Review', back_populates='route')
 
-    def __init__(self, name, description, trail, previewImage, technicalDifficulty, stamina, distance, duration, startLon, startLat, creator) -> None:
+    def __init__(self, name, description, trail, previewImage, technicalDifficulty, stamina, distance, duration, longitude, latitude, creator) -> None:
         super().__init__()
         self.name = name
         self.description = description
@@ -72,8 +72,8 @@ class Route(db.Model):
         self.stamina = stamina
         self.distance = distance
         self.duration = duration
-        self.startLon = startLon
-        self.startLat = startLat
+        self.longitude = longitude
+        self.latitude = latitude
         self.creator = creator
 
     def __repr__(self):
@@ -86,8 +86,8 @@ class Route(db.Model):
             "stamina" {self.stamina}, \
             "distance" {self.distance},\
             "duration" {self.duration}, \
-            "startLon" {self.startLon}, \
-            "startLat" {self.startLat}, \
+            "longitude" {self.longitude}, \
+            "latitude" {self.latitude}, \
             "creator" {self.creator}>'
 
 
