@@ -1,6 +1,5 @@
-from os import unlink
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import null, nullslast
+from datetime import datetime as dt
 
 db = SQLAlchemy()
 
@@ -14,6 +13,7 @@ class User(db.Model):
     emailAdresse = db.Column(db.String(45), nullable=False, unique=True)
     password = db.Column(db.String(45), nullable=False)
     rolle = db.Column(db.Integer(),  nullable=False)
+    member_since = db.Column(db.String(10), nullable=False, default="01.01.2022")
 
     def __init__(self, username, emailAdresse, password, rolle) -> None:
         super().__init__()
@@ -21,6 +21,7 @@ class User(db.Model):
         self.emailAdresse = emailAdresse
         self.password = password
         self.rolle = rolle
+        self.member_since = dt.today().strftime("%d.%m.%Y")
 
     def is_active(self):
         return True
