@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, request, abort, url_for
+from flask import Blueprint, render_template, redirect, request, abort, url_for, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
 from .db import *
 from .forms import *
@@ -64,39 +64,81 @@ def logout():
 
 
 @views.route('/routeoverview')
-def routeOverview():
-    
-    #das touren-dictionary muss nachher zu einer db-abfrage geaendert werden
-    touren = {}#dictionary mit tourbezeichnung und pfad zu vorschaubild
-    touren["Tour1"] = "bild1.jpeg"
-    touren["Tour2"] = "bild2.jpeg"
-    touren["Tour3"] = "bild3.jpeg"
-    touren["Tour4"] = "bild4.jpeg"
-    touren["Tour5"] = "bild5.jpeg"
-    touren["Tour6"] = "bild6.jpeg"
-    touren["Tour7"] = "bild7.jpeg"
-    touren["Tour8"] = "bild8.jpeg"
-    touren["Tour9"] = "bild9.jpeg"
+def routeOverview():    
+    koordinaten = {}
+    koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
+    koordinaten["Tour2"] = [8.5266546, 52.0161666 ]
+    koordinaten["Tour3"] = [8.5266346, 52.0164566 ] 
+    koordinaten["Tour4"] = [9.5278646, 52.0148666 ]
+    koordinaten["Tour5"] = [8.5267346, 52.0168466 ]
+    koordinaten["Tour6"] = [8.5266846, 51.0168266 ] 
+    koordinaten["Tour7"] = [8.5286646, 52.0168466 ]
+    koordinaten["Tour8"] = [8.5264646, 52.0161666 ]
+    koordinaten["Tour9"] = [8.5366646, 51.0164666 ]
 
+    touren = Route.query.all()
+    print(touren)
 
-    test_user = User("admin", "admin@localhost.org", "admin", 0)
-    
-    """touren = {}
-    touren["Tour1"] = Route("Route1","Dies ist Route 1", "Weg", "bild1.jpeg", 1, 1, 20)
-    touren["Tour2"] = Route("Route2","Dies ist Route 2", "Weg", "bild2.jpeg", 1, 1, 20)
-    touren["Tour3"] = Route("Route3","Dies ist Route 3", "Weg", "bild3.jpeg", 1, 1, 20)
-    touren["Tour4"] = Route("Route4","Dies ist Route 4", "Weg", "bild4.jpeg", 1, 1, 20)
-    touren["Tour5"] = Route("Route5","Dies ist Route 5", "Weg", "bild5.jpeg", 1, 1, 20)
-    touren["Tour6"] = Route("Route6","Dies ist Route 6", "Weg", "bild6.jpeg", 1, 1, 20)
-    touren["Tour7"] = Route("Route7","Dies ist Route 7", "Weg", "bild7.jpeg", 1, 1, 20)
-    touren["Tour8"] = Route("Route8","Dies ist Route 8", "Weg", "bild8.jpeg", 1, 1, 20)
-    touren["Tour9"] = Route("Route9","Dies ist Route 9", "Weg", "bild9.jpeg", 1, 1, 20)"""
+    return render_template('alleTouren.html', touren=touren)
 
-    return render_template('alleTouren.html', touren=touren, test_user=test_user)
+@views.route('/routeoverview/tourenInNaehe/<posLon>/<posLat>')
+def aktuellerStandort(posLon, posLat):
+    #standort = '{"lon":'+str(posLon)+', "lat":'+str(posLat)+'}'
 
-@views.route('/testRoute')
-def testRoute():
-    return "<h1>Testseite</h1>"
+    #touren aus db holen
+    touren = Route.query.all()
+    print(touren)
+
+    koordinaten = {}
+    for t in touren:
+        koordinaten[t.name] = [float(t.longitude), float(t.latitude)]
+    """koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
+    koordinaten["Tour2"] = [8.5266546, 52.0161666 ]
+    koordinaten["Tour3"] = [8.5266346, 52.0164566 ] 
+    koordinaten["Tour4"] = [9.5278646, 52.0148666 ]
+    koordinaten["Tour5"] = [8.5267346, 52.0168466 ]
+    koordinaten["Tour6"] = [8.5266846, 51.0168266 ] 
+    koordinaten["Tour7"] = [8.5286646, 52.0168466 ]
+    koordinaten["Tour8"] = [8.5264646, 52.0161666 ]
+    koordinaten["Tour9"] = [8.5366646, 51.0164666 ]"""
+
+    #naechste routen ermitteln
+    naechsteRouten = {"routen": []}
+    for t in touren:
+        if len(naechsteRouten["routen"])<1:#noch kein elemt in der liste
+            dist = ((float(t.longitude)-float(posLon))**2) + ((float(t.latitude)-float(posLat))**2)
+            naechsteRouten["routen"].append({"title":t.name, "pfad":t.previewImage, "distanz":dist})
+
+        if len(naechsteRouten["routen"])<6:#liste ist noch nicht voll
+            dist = ((float(t.longitude)-float(posLon))**2) + ((float(t.latitude)-float(posLat))**2)
+            #print(naechsteRouten)
+            naechsteRouten["routen"].append({"title":t.name, "pfad":t.previewImage, "distanz":dist})
+
+            for c,i in enumerate(naechsteRouten["routen"]):#an der passenden stelle der groesse nach sortiert einfuegen
+                if i["distanz"] > dist:
+
+                    for j in range(len(naechsteRouten["routen"])-1, c+1, -1):#alle um einen nach hinten verschieben
+                        naechsteRouten["routen"][j] = naechsteRouten["routen"][j-1]
+
+                    naechsteRouten["routen"][c] = {"title":t.name, "pfad":t.previewImage, "distanz":dist}#an aktuelle position die neue route einfuegen
+
+                    break
+        
+        else:#liste ist zwar schon voll koennte aber naeher als eine andere route sein
+
+            dist = ((float(t.longitude)-float(posLon))**2) + ((float(t.latitude)-float(posLat))**2)
+
+            for c,i in enumerate(naechsteRouten["routen"]):#an der passenden stelle der groesse nach sortiert einfuegen
+                if i["distanz"] > dist:
+
+                    for j in range(len(naechsteRouten["routen"])-1, c+1, -1):#alle um einen nach hinten verschieben
+                        naechsteRouten["routen"][j] = naechsteRouten["routen"][j-1]
+
+                    naechsteRouten["routen"][c] = {"title":t.name, "pfad":t.previewImage, "distanz":dist}#an aktuelle position die neue route einfuegen
+
+                    break
+
+    return jsonify(naechsteRouten)
 
 
 
