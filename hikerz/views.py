@@ -65,19 +65,8 @@ def logout():
 
 @views.route('/routeoverview')
 def routeOverview():    
-    koordinaten = {}
-    koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
-    koordinaten["Tour2"] = [8.5266546, 52.0161666 ]
-    koordinaten["Tour3"] = [8.5266346, 52.0164566 ] 
-    koordinaten["Tour4"] = [9.5278646, 52.0148666 ]
-    koordinaten["Tour5"] = [8.5267346, 52.0168466 ]
-    koordinaten["Tour6"] = [8.5266846, 51.0168266 ] 
-    koordinaten["Tour7"] = [8.5286646, 52.0168466 ]
-    koordinaten["Tour8"] = [8.5264646, 52.0161666 ]
-    koordinaten["Tour9"] = [8.5366646, 51.0164666 ]
-
     touren = Route.query.all()
-    print(touren)
+    #print(touren)
 
     return render_template('alleTouren.html', touren=touren)
 
@@ -92,15 +81,6 @@ def aktuellerStandort(posLon, posLat):
     koordinaten = {}
     for t in touren:
         koordinaten[t.name] = [float(t.longitude), float(t.latitude)]
-    """koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
-    koordinaten["Tour2"] = [8.5266546, 52.0161666 ]
-    koordinaten["Tour3"] = [8.5266346, 52.0164566 ] 
-    koordinaten["Tour4"] = [9.5278646, 52.0148666 ]
-    koordinaten["Tour5"] = [8.5267346, 52.0168466 ]
-    koordinaten["Tour6"] = [8.5266846, 51.0168266 ] 
-    koordinaten["Tour7"] = [8.5286646, 52.0168466 ]
-    koordinaten["Tour8"] = [8.5264646, 52.0161666 ]
-    koordinaten["Tour9"] = [8.5366646, 51.0164666 ]"""
 
     #naechste routen ermitteln
     naechsteRouten = {"routen": []}
