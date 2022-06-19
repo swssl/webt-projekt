@@ -17,7 +17,8 @@ class LoginForm(FlaskForm):
         if not user:     # tests if username exists
             self.user_name.errors.append("Ungültige Login-Daten")
             return False
-        if user.password != self.password.data:     #Tests if password is correct
+        # if user.password != self.password.data:     #Tests if password is correct
+        if not user.check_password(self.password.data):     #Tests if password is correct
             self.password.errors.append('Ungültige Login-Daten')
             return False
         return True

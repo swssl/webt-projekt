@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime as dt
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
@@ -11,7 +12,7 @@ class User(db.Model):
 
     username = db.Column(db.String(45), primary_key=True)
     emailAdresse = db.Column(db.String(45), nullable=False, unique=True)
-    password = db.Column(db.String(45), nullable=False)
+    password = db.Column(db.String(80), nullable=False)
     rolle = db.Column(db.Integer(),  nullable=False)
     member_since = db.Column(db.String(10), nullable=False, default="01.01.2022")
 
@@ -19,9 +20,12 @@ class User(db.Model):
         super().__init__()
         self.username = username
         self.emailAdresse = emailAdresse
-        self.password = password
+        self.password = generate_password_hash(password) # Store hashed password in db instead of plain text
         self.rolle = rolle
         self.member_since = dt.today().strftime("%d.%m.%Y")
+
+    def check_password(self, pwd):
+        return check_password_hash(self.password, pwd)
 
     def is_active(self):
         return True

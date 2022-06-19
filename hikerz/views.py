@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, request, abort, url_for, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
+from werkzeug.security import generate_password_hash
 from .db import *
 from .forms import *
 
@@ -47,7 +48,7 @@ def profile(username):
         if form.email.data:
             current_user.emailAdresse = form.email.data
         if form.new_password.data:
-            current_user.password = form.new_password.data
+            current_user.password = generate_password_hash(form.new_password.data)
         db.session.commit()
         return redirect(f"/login?confirm={current_user.username}") 
         # Redirect to login view because the login needs to be refreshed after changing the users username (primary key)
