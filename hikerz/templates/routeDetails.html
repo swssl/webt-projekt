@@ -2,72 +2,116 @@
 
 {% block content %}
 
-    <h1 align="center">Routendetails</h1>
+    <div class="container">
 
-    <h2></h2>
-    <div>
-        <form action="" method="post">
-            {{routeDetailsForm.csrf_token}}
-            <div class="row">
-                <div class="col">
-                    {{routeDetailsForm.name.label(class="form-label")}}
-                    {{routeDetailsForm.name(class="form-control")}}
-                </div>
+        <div class="row">
+            <h1 align="left" class="col">Details für "{{ route.name }}":</h1>
+        </div>
+
+        <!--navigation through details: select highlight, highlightImage and routeImage-->
+        <div class="row"  style="background-color: var(--farbe2)">
+            <div class="col">
+                <ul class="nav justify-content-center border-bottom border-top align-middle">
+    
+                    <li class="nav-item mx-4">
+                        <select class="select">
+                            {% for highlight in highlights %}
+                                <option onselect="location.href = '/routeDetails/{{route.id}}/highlights/{{highlight.id}}';">
+                                    {{ highlight.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </li>
+        
+                    <li class="nav-item mx-4 routeDetails_navButton">
+                        <button class="btn float-start" href="/routeDetails/{{route.id}}/highlights/{{highlight.id}}/highlightImages" role="button">
+                            Highlight Images
+                        </button>
+                    </li>
+        
+                    <li class="nav-item mx-4 routeDetails_navButton">
+                        <button class="btn float-start" href="/routeImages" role="button">
+                            Route Images
+                        </button>
+                    </li>
+
+
+                    <!--TODO: if user is logged in (and is not creator) -> allow reviewing/rating-->
+                    {%if current_user.is_authenticated() and current_user.username != route.creator %}
+                        <li class="nav-item mx-4 routeDetails_navButton">
+                            <button class="btn float-start" href="/routeReviewAdd" role="button">
+                                Review erstellen
+                            </button>
+                        </li>
+                    {% endif %}
+                </ul>
             </div>
-            <div class="row">
-                <div class="col">
-                    {{routeDetailsForm.description.label(class="form-label")}}
-                    {{routeDetailsForm.description(class="form-control")}}
-                </div>
+        </div>
+
+    
+        <!--Options to add route image if user is creator-->
+        {% if current_user.username == route.creator %}
+            <div class="row" style="background-color: var(--farbe2)">
+                <ul class="nav justify-content-center border-bottom align-middle mt-2 mb-2">
+
+                    <!--Add another route image-->
+                    <li class="nav-item mx-4">
+                        <form method="post">
+                            {{routeImageForm.csrf_token}}
+    
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col">
+                                        {{ routeImageForm.image.label(class="form-label") }}
+                                    </div>
+                                    <div class="col">
+                                        {{ routeImageForm.image(class="form-control") }}
+                                    </div>
+                                    <div class="col">
+                                        {{ routeImageForm.submit(class="btn routeDetails_navButton", style="background-color: var(--farbe6)") }}
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </li>
+
+
+                    <!--Add another highlight image-->
+                    <!--TODO: have to get selected highlight-->
+                    <!-- <li class="nav-item mx-4">
+                        <form method="post">
+                            {{routeImageForm.csrf_token}}
+    
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col">
+                                        {{ routeImageForm.image.label(class="form-label") }}
+                                    </div>
+                                    <div class="col">
+                                        {{ routeImageForm.image(class="form-control") }}
+                                    </div>
+                                    <div class="col">
+                                        {{ routeImageForm.submit(class="btn routeDetails_navButton", style="background-color: var(--farbe6)") }}
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </li> -->
+    
+                    <!-- <li class="nav-item mx-4">
+                        <button class="btn float-start" href="/routeImages" role="button">
+                            Add Highlight Image
+                        </button>
+                    </li> -->
+                </ul>
             </div>
-            <div class="row">
-                <div class="col">
-                    {{routeDetailsForm.trail.label(class="form-label")}}
-                    {{routeDetailsForm.trail(class="form-control")}}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    {{routeDetailsForm.previewImage.label(class="form-label")}}
-                    {{routeDetailsForm.previewImage(class="form-control")}}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    {{routeDetailsForm.technicalDifficulty.label(class="form-label")}}
-                    {{routeDetailsForm.technicalDifficulty(class="form-control")}}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    {{routeDetailsForm.stamina.label(class="form-label")}}
-                    {{routeDetailsForm.stamina(class="form-control")}}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    {{routeDetailsForm.distance.label(class="form-label")}}
-                    {{routeDetailsForm.distance(class="form-control")}}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    {{routeDetailsForm.duration.label(class="form-label")}}
-                    {{routeDetailsForm.duration(class="form-control")}}
-                </div>
-            </div>
-            <div class="row">
-                {% if routeDetailsForm.errors != {} and request.method != "GET" %}
-                {% for field, msg in routeDetailsForm.errors.items() %}
-                <div class="alert alert-danger" role="alert">{{ msg[0] }}</div>
-                {% endfor %}
-                {% endif %}
-                <div class="col text-center">
-                    {{routeDetailsForm.submit(class="btn", style="background-color: var(--farbe2)")}}
-                </div>
-            </div>
-        </form>
+        {% endif %}
+    
+        <!--Contains routeDetails: highlights, highlightImages, routeImages, tags, ...-->
+        <div class="container-fluid">
+            {% block routeDetailsContent %}{% endblock %}
+        </div>
+    
     </div>
-
 
 {% endblock %}

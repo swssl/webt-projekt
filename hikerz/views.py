@@ -206,7 +206,7 @@ def adminbereichRechteVerringern(userID):
     return redirect('/adminbereich')#auf adminbereich verlinken
 
 
-@views.route('/addRoute')
+@views.route('/addRoute', methods=['GET', 'POST'])
 @login_required
 def addRoute():
     form = AddRouteForm()
@@ -221,59 +221,130 @@ def addRoute():
             form.data['stamina'],
             form.data['distance'],
             form.data['duration'],
-            form.data['creator'])
-        
+            form.data['longitude'],
+            form.data['latitude'],
+            form.data['creator']
+        )
+        newRoute.creator = current_user.username
+        newRoute.trail = './hikerz/static/routes/' + newRoute.trail
+        newRoute.previewImage = './hikerz/static/vorschaubilder/' + newRoute.previewImage
+
         db.session.add(newRoute)
         db.session.commit()
 
-        return redirect('alleTouren.html')
+        return redirect(f'/routeDetails/{newRoute.id}')
 
-    return render_template('addRoute.html', addRouteForm=form) # maybe pass the users current location as default position (+ also pass the user)
+    return render_template('addRoute.html', addRouteForm=form)
 
 
-@views.route('/routeDetails')
-def routeDetails():
-    """
-    If user is logged in, then editing should be enabled (if this route is created by this user).
-    If this route is not created by the user, then rating/commenting is possible
-    If user is not logged in, only viewing is possible.
-    """
-    route = Route.query.all.first()
-    return render_template('routeDetails.html', route=route)
+@views.route('/routeDetails/<routeId>', methods=['GET', 'POST'])
+def routeDetails(routeId):
+    route = Route.query.filter_by(id=routeId).first()
+    highlights = db.session.query(Highlight).join(HighlightInRoute).filter(HighlightInRoute.routeId == routeId).all()
 
-def manufactureSampleRoutes():
-    route1 = Route(
-        'Supertreck 2022', 
-        'Dieser Treck ist super!', 
-        './static/routes/example01.gpx',
-        './static/vorschaubilder/bild1.jpeg',
-        3, 5, 6500, 150,
-        '11.123333290123456', '17.809987653214267')
-    route2 = Route(
-        'Zugspitze', 
-        'Durch das Höllental auf die Zugspitze. Über Höllentalklamm, Gletscher und Klettersteig zum Gipfel. Trittsicherheit, solide Kondition und Schwindelfreiheit sind von Vorteil.', 
-        './static/routes/zugspitze.gpx',
-        './static/vorschaubilder/zugspitze1.jpeg',
-        5, 9, 19000, 700,
-        '1.123456890123456', '17.809876543214267')
-    route3 = Route(
-        'GR20-E1', 
-        'Der härteste Fernwanderweg Europas - Etappe 1', 
-        './static/routes/gr20_etappe1.gpx',
-        './static/vorschaubilder/bild12.jpeg',
-        4, 7, 10000, 300,
-        '8.854634646715482', '42.50634681278886')
-    route4 = Route(
-        'Entspannter Spaziergang', 
-        'Zum entspannen', 
-        './static/routes/test03.gpx',
-        './static/vorschaubilder/bild5.jpeg',
-        1, 2, 3500, 60,
-        '82.851234567715482', '42.50634681278886')
+    routeImageForm = AddRouteImageForm()
 
-    db.session.add(route1)
-    db.session.add(route2)
-    db.session.add(route3)
-    db.session.add(route4)
-    db.session.commit()
+    if routeImageForm.validate_on_submit():
+        newRouteImage = RouteImage(
+            routeImageForm.data['routeId'],
+            routeImageForm.data['image'],
+            routeImageForm.data['creator']
+        )
+        newRouteImage.routeId = routeId
+        newRouteImage.image = './hikerz/static/vorschaubilder/' + newRouteImage.image
+        newRouteImage.creator = current_user.username
+
+        db.session.add(newRouteImage)
+        db.session.commit()
+
+        return redirect(f'/routeDetails/{route.id}')
     
+    return render_template(
+        'routeImages.html',
+        highlights=highlights, 
+        route=route, 
+        routeImageForm=routeImageForm)
+
+    
+    # If user is logged in, then editing should be enabled (if this route is created by this user).
+        # creating new details is also regarded as "editing"
+    # If this route is not created by the user, then rating/commenting is possible
+    # If user is not logged in, only viewing is possible.
+    """
+    if current_user.username == route.creator:
+        if form.validate_on_submit():
+            newHighlight = Highlight(
+                form.data['hName'],
+                form.data['hDescription'],
+                form.data['previewImage'],
+                form.data['latitude'],
+                form.data['longitude'],
+                form.data['creator']
+            )
+            newHighlight.creator = current_user.username
+            db.session.add(newHighlight)
+            db.session.commit()
+
+    elif current_user.is_authenticated() and current_user.username != route.creator:
+        # logged in user (not creator) can rate / review / comment
+        pass
+    else: # read only for not logged in users
+        # TODO: add validation and use joins for queries
+
+        # highlights
+        highlightsInRoute = HighlightInRoute.query.filter_by(routeId=routeId).all()
+        highlights = []
+        highlightImages = []
+        for hir in highlightsInRoute:
+            highlights.append(Highlight.query.filter_by(id=hir.highlightId).all())
+            highlightImages.append(HighlightImage.query.filter_by(highlightId=hir.highlightId).all())
+        
+        # images
+        routeImages = RouteImage.query.filter_by(routeId=routeId).all()
+
+        # tags
+        tags = TagOfRoute.query.filter_by(routeId=routeId).all()
+
+        # reviews
+        reviews = Review.query.filter_by(routeId=routeId).all()
+        reviewImages = []
+        for review in reviews:
+            reviewImages.append(ReviewImage.query.filter_by(reviewId=review.id).all())
+
+    details = { # maybe build extra data-structure for this...
+        'route' : route,
+        'routeImages' : 'routeImages',
+        'highlights' : 'highlights',
+        'highlightImages' : 'highlightImages',
+        'tags' : 'tags',
+        'reviews' : 'reviews',
+        'reviewImages' : 'reviewImages'
+    }"""
+
+
+
+@views.route('/routeDetails/<routeId>/routeImages', methods=['GET'])
+def routeImages(routeId):
+    route = Route.query.filter_by(id=routeId).first()
+    images = RouteImage.query.filter_by(routeId=routeId).all()
+
+    return render_template('routeImages.html', images=images, route=route)
+
+
+
+@views.route('/routeDetails/<routeId>/highlights/<highlightId>', methods=['GET'])
+def routeHighlight(routeId, highlightId):
+    highlight = Highlight.query.filter_by(highlightId=highlightId).first()
+
+    return render_template('routeHighlight.html', highlight=highlight)
+
+
+
+@views.route('/routeDetails/<routeId>/highlights/<highlightId>/highlightImages', methods=['GET'])
+def highlightImages(highlightId):
+    highlight = Highlight.query.filter_by(highlightId=highlightId).first()
+    images = HighlightImage.query.filter_by(highlightId=highlightId).all()
+
+    return render_template('routeHighlightImages.html', images=images, highlight=highlight)
+
+

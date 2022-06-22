@@ -5,6 +5,7 @@
     --farbe3: #635255;
     --farbe4: #DD9787;
     --farbe5: #FFD4CA;
+    --farbe6: #f2f3dc;
   }
   
 
@@ -21,4 +22,37 @@
     height: auto;
     max-height: 250px;
     width: auto;
+}
+
+
+
+.descriptionBox {
+    height: 90%;
+}
+
+.addRoute_contentSeparator {
+    margin-top: 1em;
+}
+
+.routeDetails_imageContainer {
+    margin: 0.5em;
+}
+
+.routeDetails_descriptionBox {
+    background-color: var(--farbe5);
+    font-style: italic;
+}
+
+.addRoute_contentContainerLeft {
+    margin-right: 0.5em;
+    margin-left: 1em;
+}
+
+.addRoute_contentContainerRight {
+    margin-right: 1em;
+    margin-left: 0.5em;
+}
+
+.routeDetails_navButton {
+    background-color: var(--farbe6);
 }

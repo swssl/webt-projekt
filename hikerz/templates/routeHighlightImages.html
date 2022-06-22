@@ -1,0 +1,23 @@
+{% extends 'routeDetails.html' %}
+
+
+<!--postponed-->
+{% block routeDetailsContent %}
+
+    <h2>Bilder zu "{{ highlight.name }}":</h2>
+
+    <div class="row">
+        <p class="routeDetails_descriptionBox">
+            {{ highlight.description }}
+        </p>
+    </div>
+
+    <div class="row">
+        {% for im in images %}
+            <div class="routeDetails_imageContainer col-lg-4 col-md-6 p-3">
+                <img class="card-img" src="{{ im }}" alt="Bild einer Route">
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
