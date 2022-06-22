@@ -9,29 +9,25 @@
         </div>
 
         <!--navigation through details: select highlight, highlightImage and routeImage-->
-        <div class="row"  style="background-color: var(--farbe2)">
+        <div class="row">
             <div class="col">
-                <ul class="nav justify-content-center border-bottom border-top align-middle">
+                <ul class="nav justify-content-center border-bottom align-middle">
     
-                    <li class="nav-item mx-4">
-                        <select class="select">
-                            {% for highlight in highlights %}
-                                <option onselect="location.href = '/routeDetails/{{route.id}}/highlights/{{highlight.id}}';">
-                                    {{ highlight.name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </li>
-        
                     <li class="nav-item mx-4 routeDetails_navButton">
-                        <button class="btn float-start" href="/routeDetails/{{route.id}}/highlights/{{highlight.id}}/highlightImages" role="button">
-                            Highlight Images
+                        <button class="btn float-start" onclick='location.href="/routeDetails/{{ route.id }}/highlights"' role="button">
+                            Highlights
                         </button>
                     </li>
-        
+
                     <li class="nav-item mx-4 routeDetails_navButton">
-                        <button class="btn float-start" href="/routeImages" role="button">
-                            Route Images
+                        <button class="btn float-start" onclick='location.href="/routeDetails/{{ route.id }}/routeImages"' role="button">
+                            Routenbilder
+                        </button>
+                    </li>
+
+                    <li class="nav-item mx-4 routeDetails_navButton">
+                        <button class="btn float-start" onclick='location.href="/routeDetails/{{ route.id }}/reviews"' role="button">
+                            Reviews
                         </button>
                     </li>
 
@@ -50,8 +46,8 @@
 
     
         <!--Options to add route image if user is creator-->
-        {% if current_user.username == route.creator %}
-            <div class="row" style="background-color: var(--farbe2)">
+        {% if current_user.username == route.creator and False %}
+            <div class="row">
                 <ul class="nav justify-content-center border-bottom align-middle mt-2 mb-2">
 
                     <!--Add another route image-->
@@ -68,7 +64,7 @@
                                         {{ routeImageForm.image(class="form-control") }}
                                     </div>
                                     <div class="col">
-                                        {{ routeImageForm.submit(class="btn routeDetails_navButton", style="background-color: var(--farbe6)") }}
+                                        {{ routeImageForm.submit(class="btn routeDetails_navButton")}}
                                     </div>
                                 </div>
                             </div>

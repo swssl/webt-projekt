@@ -51,9 +51,12 @@ class AddRouteForm(FlaskForm):
 class AddHighlightForm(FlaskForm):
     name = StringField('Highlight Titel', validators=[DataRequired()])
     description = StringField('Highlight Beschreibung', validators=[DataRequired()])
-    previewImage = StringField('Highlight Vorschaubild (Pfad)', validators=[DataRequired()])
-    longitude = StringField('Längengrad', validators=[DataRequired(), Regexp('^[\d]{1,3}.[\d]+$', message='Es dürfen nur Zahlen und ein Punkt angegeben werden (12.123123123).')])
-    latitude = StringField('Breitengrad', validators=[DataRequired(), Regexp('^[\d]{1,3}.[\d]+$', message='Es dürfen nur Zahlen und ein Punkt angegeben werden (12.123123123).')])
+    regex = re.compile('^[\w]+\.(jpg|png|jpeg|JPG|JPEG|PNG)$')
+    previewImage = FileField(label='Vorschaubild', validators=[Regexp(regex, 'Eine ungültige Bild-Datei wurde ausgewählt! (jpg|png|jpeg)')])
+    regex = re.compile('^[\d]{1,3}.[\d]+$')
+    errorMsg = 'Es dürfen nur Zahlen und ein Punkt angegeben werden (12.123123123).'
+    longitude = StringField('Längengrad', validators=[DataRequired(), Regexp(regex, message=errorMsg)])
+    latitude = StringField('Breitengrad', validators=[DataRequired(), Regexp(regex, message=errorMsg)])
     creator = StringField('Ersteller', default=current_user)
 
     submit = SubmitField('Neues Highlight hinzufügen')
@@ -78,11 +81,12 @@ class AddRouteImageForm(FlaskForm):
 class AddHighlightImageForm(FlaskForm):
     regex = re.compile('^[\w]+\.(jpg|png|jpeg|JPG|JPEG|PNG)$')
     image = FileField(label='Bild', validators=[Regexp(regex, 'Eine ungültige Bild-Datei wurde ausgewählt! (jpg|png|jpeg)')])
-    # TODO: build path from filename
     submit = SubmitField('Bild hinzufügen')
 
     def validate(self, extra_validators=None):
         return super().validate(extra_validators)
+
+
 
 # TODO: Reviews and Tags (postponed)
 

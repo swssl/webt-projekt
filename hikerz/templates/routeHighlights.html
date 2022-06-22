@@ -1,0 +1,49 @@
+{% extends 'routeDetails.html' %}
+
+
+{% block routeDetailsContent %}
+    <div class="container mt-1">
+        {% if current_user.username == route.creator %}
+            <div class="row">
+                <!--add new highlight-->
+                <div class="col">
+                    <ul class="nav justify-content-center border-bottom align-middle">
+                        <li class="nav-item mx-4 routeDetails_navButton">
+                            <button class="btn float-start" href="/routeDetails/{{ route.id }}/addHighlight" role="button">
+                                Neues Highlight
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                
+                {% block newRouteHighlight %}{% endblock %}
+            </div>
+        {% endif %}
+
+
+        <div class="row">
+            <div class="col">
+
+                {% for highlight in highlights %}
+                
+                    <div class="card bg-dark text-white col-lg-4 col-md-6 p-3 border bg-light">
+                        <div class="card-header">
+                            <h3>
+                                {{ highlight.name }}
+                            </h3>
+                        </div>
+                        <img class="card-img" src="../{{ highlight.previewImage }}" alt="">
+                        <div class="card-footer">
+                            <a href="/routeDetails/{{ route.id }}/highlights/{{ highlight.id }}" class="btn btn-primary stretched-link">
+                                Mehr Details
+                            </a>
+                        </div>
+                    </div>
+        
+                {% endfor %}
+    
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

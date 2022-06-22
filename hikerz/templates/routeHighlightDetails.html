@@ -1,0 +1,65 @@
+{% extends 'routeHighlights.html' %}
+
+{% block newRouteHighlight %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+
+                        <!--Name-->
+                        <div class="row">
+                            <div class="col">
+                                {{addHighlightForm.name.label(class='form-label')}}
+                                {{addHighlightForm.name(class='form-control')}}
+                            </div>
+                        </div>
+
+                        <!--Longitude-->
+                        <div class="row">
+                            <div class="col">
+                                {{addHighlightForm.longitude.label(class='form-label')}}
+                                {{addHighlightForm.longitude(class='form-control')}}
+                            </div>
+                        </div>
+
+                        <!--Latitude-->
+                        <div class="row">
+                            <div class="col">
+                                {{addHighlightForm.latitude.label(class='form-label')}}
+                                {{addHighlightForm.latitude(class='form-control')}}
+                            </div>
+                        </div>
+
+                        <!--Description-->
+                        <div class="row">
+                            <div class="col">
+                                {{addHighlightForm.description.label(class='form-label')}}
+                                {{addHighlightForm.description(class='form-control')}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--Preview Image-->
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        {{addHighlightForm.previewImage.label(class='form-label')}}
+                        {{addHighlightForm.previewImage(class='form-control')}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col text-center">
+                {{addHighlightForm.submit(class='btn')}}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

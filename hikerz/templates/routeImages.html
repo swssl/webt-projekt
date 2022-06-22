@@ -12,11 +12,13 @@
     </div>
 
     <div class="row">
-        {% for im in images %}
-            <div class="routeDetails_imageContainer col-lg-4 col-md-6">
-                <img class="card-img" src="../{{ im }}" alt="Bild einer Route">
-            </div>
-        {% endfor %}
+        <div class="col">
+            {% for im in images %}
+                <div class="routeDetails_imageContainer card col-lg-4 col-md-6 col-sm-12 p-3">
+                    <img class="card-img" src="../{{ im.previewImage }}" alt="">
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
 {% endblock %}
