@@ -1,9 +1,9 @@
 
-from sys import flags
 from flask import Blueprint, render_template, redirect, request, abort, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
 from hikerz.db import *
 from hikerz.forms import *
+import gpxpy.gpx
 
 
 # Hier stehen die URL-Endpunkte/Routes
@@ -226,6 +226,18 @@ def addRoute():
             current_user.username
         )
 
+        try:
+            gpxFile = open('.' + newRoute.trail, 'r')
+            gpx = gpxpy.parse(gpxFile)
+            gpxPoint = gpx.tracks[0].segments[0].points[0] # first point = start point
+            coords = (gpxPoint.longitude, gpxPoint.latitude)
+
+        except: # if reading gpx-file fails -> return default coords
+            coords = ('51.9115881915', '8.8395630534') # default: Hermannsdenkmal
+
+        newRoute.longitude = coords[0]
+        newRoute.latitude = coords[1]
+
         db.session.add(newRoute)
         db.session.commit()
 
@@ -254,6 +266,25 @@ def routeDetails(routeId):
 
         return redirect(f'/routeDetails/{route.id}')
     
+
+    if addHighlightForm.validate_on_submit():
+        newHighlight = Highlight(
+            addHighlightForm.data['name'],
+            addHighlightForm.data['description'],
+            '/static/vorschaubilder/' + addHighlightForm.data['previewImage'],
+            addHighlightForm.data['latitude'],
+            addHighlightForm.data['longitude'],
+            current_user.username
+        )
+
+        db.session.add(newHighlight)
+        db.session.commit() # id of new highlight is added on insertion... (???)
+
+        highlightRouteAssociation = HighlightInRoute(routeId, newHighlight.id)
+        db.session.add(highlightRouteAssociation)
+        db.session.commit()
+
+        return redirect(f'/routeDetails/{ route.id }')
 
     return render_template(
         'routeHighlights.html',
@@ -327,9 +358,6 @@ def addRouteHighlight(routeId):
             current_user.username
         )
 
-        print('====================================')
-        print(newHighlight)
-
         db.session.add(newHighlight)
         db.session.commit() # id of new highlight is added on insertion... (???)
 
@@ -337,7 +365,7 @@ def addRouteHighlight(routeId):
         db.session.add(highlightRouteAssociation)
         db.session.commit()
 
-        return redirect(f'/routeDetails/{ routeId }/highlights')
+        return redirect(f'/routeDetails/{ route.id }/highlights')
 
     return render_template('routeHighlights.html', addHighlightForm=form, highlights=highlights, route=route)
 

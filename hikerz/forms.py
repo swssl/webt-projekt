@@ -6,29 +6,10 @@ from flask_login import current_user
 from flask_wtf import FlaskForm
 from .db import User
 import re
-import gpxpy.gpx
 
 
 
 class AddRouteForm(FlaskForm):
-
-    def getStartCoordinates(gpxFile):
-        """
-        Returns a tuple of the first coordinate-pair from the specified gpx-file.
-        Returned format: (longitude, latitude)
-        """
-
-        try:
-            gpxFile = open(gpxFile, 'r')
-            gpx = gpxpy.parse(gpxFile)
-            gpxPoint = gpx.tracks[0].segments[0].points[0] # first point = start point
-
-            return (gpxPoint.longitude, gpxPoint.latitude)
-
-        except: # if reading gpx-file fails -> return default coords
-            return ('51.91158819152654', '8.839563053438653') # default: Hermannsdenkmal
-
-
     name = StringField('Titel', validators=[DataRequired()])
     description = TextAreaField('Beschreibung', validators=[DataRequired()])
 
@@ -43,10 +24,8 @@ class AddRouteForm(FlaskForm):
     regexImage = re.compile('^[\w]+\.(jpg|png|jpeg|JPG|JPEG|PNG)$')
     previewImage = FileField(label='Vorschaubild', validators=[Regexp(regexImage, 'Eine ungültige Bild-Datei wurde ausgewählt! (jpg|png|jpeg)')])
 
-    startCoordinates = getStartCoordinates()
-    longitude = StringField('Längengrad', default=startCoordinates[0])
-    latitude = StringField('Breitengrad', default=startCoordinates[1])
-    creator = StringField('Ersteller', default=current_user)
+    longitude = StringField()
+    latitude = StringField()
 
     submit = SubmitField('Route erstellen')
 
