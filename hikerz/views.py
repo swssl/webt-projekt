@@ -1,10 +1,9 @@
-
-from flask import Blueprint, render_template, redirect, request, abort, jsonify
-from flask_login import current_user, login_required, login_user, logout_user
-from hikerz.db import *
-from hikerz.forms import *
 import gpxpy.gpx
-
+from flask import Blueprint, render_template, redirect, request, abort, url_for, jsonify
+from flask_login import current_user, login_required, login_user, logout_user
+from werkzeug.security import generate_password_hash
+from .db import *
+from .forms import *
 
 # Hier stehen die URL-Endpunkte/Routes
 
@@ -12,24 +11,19 @@ views = Blueprint("views", __name__, template_folder="templates")
 
 @views.route('/')
 def index():
-    if current_user.is_authenticated: return redirect('home')
-    else: return render_template("index.html")
+    return render_template("home.html")
 
-@views.route('/home')
-@login_required
-def home():
-    return render_template('home.html')
 
 @views.route('/login', methods=['GET', 'POST'])
 def login():
     # login view can be used for login an for confirmation
     if current_user.is_authenticated and not request.args.get("confirm"):  # redirect to home if user is already logged in
-        return redirect("home")
+        return redirect(url_for("views.index"))
     form = LoginForm()
     if form.validate_on_submit():  # if valid data ist send by POST:
         user = User.query.filter_by(username=form.data['user_name']).first()  # query user from db
         login_user(user)
-        return redirect("home")
+        return redirect(url_for("views.index"))
     return render_template('login.html', login_form=form, username_value=request.args.get('confirm'))
 
 @views.route('/register', methods=["GET", "POST"])
@@ -46,6 +40,8 @@ def register():
 @views.route('/profil/<username>', methods=["GET", "POST"])
 def profile(username):
     displayed_user = User.query.filter_by(username=username).first() # Get the users data from the database
+    if not displayed_user:
+        abort(404)
     form = AccountSettings()
     if form.validate_on_submit(): # If form is posted, look for changed data and forward it to the currentuser object
         if form.user_name.data:
@@ -53,10 +49,11 @@ def profile(username):
         if form.email.data:
             current_user.emailAdresse = form.email.data
         if form.new_password.data:
-            current_user.password = form.new_password.data
+            current_user.password = generate_password_hash(form.new_password.data)
         db.session.commit()
         return redirect(f"/login?confirm={current_user.username}") 
         # Redirect to login view because the login needs to be refreshed after changing the users username (primary key)
+    # displayed_tours = Route.query.filter_by(creator=displayed_user.username).all()
     return render_template("profile.html", form=form, user = displayed_user)
 
 @views.route('/logout')
@@ -65,24 +62,13 @@ def logout():
     if current_user.is_authenticated:
         logout_user()
         return redirect("/")
-    return render_template('login.html') 
+    return render_template(url_for("views.index")) 
 
 
 @views.route('/routeoverview')
 def routeOverview():    
-    koordinaten = {}
-    koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
-    koordinaten["Tour2"] = [8.5266546, 52.0161666 ]
-    koordinaten["Tour3"] = [8.5266346, 52.0164566 ] 
-    koordinaten["Tour4"] = [9.5278646, 52.0148666 ]
-    koordinaten["Tour5"] = [8.5267346, 52.0168466 ]
-    koordinaten["Tour6"] = [8.5266846, 51.0168266 ] 
-    koordinaten["Tour7"] = [8.5286646, 52.0168466 ]
-    koordinaten["Tour8"] = [8.5264646, 52.0161666 ]
-    koordinaten["Tour9"] = [8.5366646, 51.0164666 ]
-
     touren = Route.query.all()
-    print(touren)
+    #print(touren)
 
     return render_template('alleTouren.html', touren=touren)
 
@@ -97,15 +83,6 @@ def aktuellerStandort(posLon, posLat):
     koordinaten = {}
     for t in touren:
         koordinaten[t.name] = [float(t.longitude), float(t.latitude)]
-    """koordinaten["Tour1"] = [8.5267646, 52.0268666 ]
-    koordinaten["Tour2"] = [8.5266546, 52.0161666 ]
-    koordinaten["Tour3"] = [8.5266346, 52.0164566 ] 
-    koordinaten["Tour4"] = [9.5278646, 52.0148666 ]
-    koordinaten["Tour5"] = [8.5267346, 52.0168466 ]
-    koordinaten["Tour6"] = [8.5266846, 51.0168266 ] 
-    koordinaten["Tour7"] = [8.5286646, 52.0168466 ]
-    koordinaten["Tour8"] = [8.5264646, 52.0161666 ]
-    koordinaten["Tour9"] = [8.5366646, 51.0164666 ]"""
 
     #naechste routen ermitteln
     naechsteRouten = {"routen": []}

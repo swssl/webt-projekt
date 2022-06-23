@@ -88,7 +88,8 @@ class LoginForm(FlaskForm):
         if not user:     # tests if username exists
             self.user_name.errors.append("Ungültige Login-Daten")
             return False
-        if user.password != self.password.data:     #Tests if password is correct
+        # if user.password != self.password.data:     #Tests if password is correct
+        if not user.check_password(self.password.data):     #Tests if password is correct
             self.password.errors.append('Ungültige Login-Daten')
             return False
         return True
@@ -102,7 +103,7 @@ class RegistrationForm(FlaskForm):
         DataRequired(),
         EqualTo('confirm_password', message='Die Passwörter stimmen nicht überein')
     ])
-    confirm_password = PasswordField('Passwort', [InputRequired()])
+    confirm_password = PasswordField('Passwort bestätigen', [InputRequired()])
     captcha = BooleanField('Ich bin kein Roboter', [InputRequired()])
     submit = SubmitField("Konto erstellen")
 
