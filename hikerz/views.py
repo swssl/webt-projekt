@@ -53,8 +53,8 @@ def profile(username):
         db.session.commit()
         return redirect(f"/login?confirm={current_user.username}") 
         # Redirect to login view because the login needs to be refreshed after changing the users username (primary key)
-    # displayed_tours = Route.query.filter_by(creator=displayed_user.username).all()
-    return render_template("profile.html", form=form, user = displayed_user)
+    displayed_tours = Route.query.filter_by(creator=displayed_user.username).all()
+    return render_template("profile.html", form=form, user = displayed_user, displayed_tours = displayed_tours)
 
 @views.route('/logout')
 @login_required
@@ -72,6 +72,56 @@ def routeOverview():
 
     return render_template('alleTouren.html', touren=touren)
 
+# @views.route('/routeoverview/tourenInNaehe/<posLon>/<posLat>')
+# def aktuellerStandort(posLon, posLat):
+#     #standort = '{"lon":'+str(posLon)+', "lat":'+str(posLat)+'}'
+
+#     #touren aus db holen
+#     touren = Route.query.all()
+#     print(touren)
+
+#     koordinaten = {}
+#     for t in touren:
+#         koordinaten[t.name] = [float(t.longitude), float(t.latitude)]
+
+#     #naechste routen ermitteln
+#     naechsteRouten = {"routen": []}
+#     for t in touren:
+#         if len(naechsteRouten["routen"])<1:#noch kein elemt in der liste
+#             dist = ((float(t.longitude)-float(posLon))**2) + ((float(t.latitude)-float(posLat))**2)
+#             naechsteRouten["routen"].append({"title":t.name, "pfad":t.previewImage, "distanz":dist})
+
+#         if len(naechsteRouten["routen"])<6:#liste ist noch nicht voll
+#             dist = ((float(t.longitude)-float(posLon))**2) + ((float(t.latitude)-float(posLat))**2)
+#             #print(naechsteRouten)
+#             naechsteRouten["routen"].append({"title":t.name, "pfad":t.previewImage, "distanz":dist})
+
+#             for c,i in enumerate(naechsteRouten["routen"]):#an der passenden stelle der groesse nach sortiert einfuegen
+#                 if i["distanz"] > dist:
+
+#                     for j in range(len(naechsteRouten["routen"])-1, c+1, -1):#alle um einen nach hinten verschieben
+#                         naechsteRouten["routen"][j] = naechsteRouten["routen"][j-1]
+
+#                     naechsteRouten["routen"][c] = {"title":t.name, "pfad":t.previewImage, "distanz":dist}#an aktuelle position die neue route einfuegen
+
+#                     break
+        
+#         else:#liste ist zwar schon voll koennte aber naeher als eine andere route sein
+
+#             dist = ((float(t.longitude)-float(posLon))**2) + ((float(t.latitude)-float(posLat))**2)
+
+#             for c,i in enumerate(naechsteRouten["routen"]):#an der passenden stelle der groesse nach sortiert einfuegen
+#                 if i["distanz"] > dist:
+
+#                     for j in range(len(naechsteRouten["routen"])-1, c+1, -1):#alle um einen nach hinten verschieben
+#                         naechsteRouten["routen"][j] = naechsteRouten["routen"][j-1]
+
+#                     naechsteRouten["routen"][c] = {"title":t.name, "pfad":t.previewImage, "distanz":dist}#an aktuelle position die neue route einfuegen
+
+#                     break
+
+#     return jsonify(naechsteRouten)
+
 @views.route('/routeoverview/tourenInNaehe/<posLon>/<posLat>')
 def aktuellerStandort(posLon, posLat):
     #standort = '{"lon":'+str(posLon)+', "lat":'+str(posLat)+'}'
@@ -80,6 +130,8 @@ def aktuellerStandort(posLon, posLat):
     touren = Route.query.all()
     print(touren)
 
+    #überall wo vorher longitude stand steht jetzt description
+    #überall wo vorher latitude stand steht jetzt trail
     koordinaten = {}
     for t in touren:
         koordinaten[t.name] = [float(t.longitude), float(t.latitude)]
@@ -91,12 +143,12 @@ def aktuellerStandort(posLon, posLat):
             dist = ((float(t.longitude)-float(posLon))**2) + ((float(t.latitude)-float(posLat))**2)
             naechsteRouten["routen"].append({"title":t.name, "pfad":t.previewImage, "distanz":dist})
 
-        if len(naechsteRouten["routen"])<6:#liste ist noch nicht voll
+        elif len(naechsteRouten["routen"])<6:#liste ist noch nicht voll
             dist = ((float(t.longitude)-float(posLon))**2) + ((float(t.latitude)-float(posLat))**2)
             #print(naechsteRouten)
             naechsteRouten["routen"].append({"title":t.name, "pfad":t.previewImage, "distanz":dist})
 
-            for c,i in enumerate(naechsteRouten["routen"]):#an der passenden stelle der groesse nach sortiert einfuegen
+            """for c,i in enumerate(naechsteRouten["routen"]):#an der passenden stelle der groesse nach sortiert einfuegen
                 if i["distanz"] > dist:
 
                     for j in range(len(naechsteRouten["routen"])-1, c+1, -1):#alle um einen nach hinten verschieben
@@ -104,11 +156,22 @@ def aktuellerStandort(posLon, posLat):
 
                     naechsteRouten["routen"][c] = {"title":t.name, "pfad":t.previewImage, "distanz":dist}#an aktuelle position die neue route einfuegen
 
-                    break
+                    break"""
+
+            #mittels bubblesort die liste sortieren
+            swapped = False
+            for i in range(len(naechsteRouten["routen"])-1):
+                for j in range(0, len(naechsteRouten["routen"])-1):
+                    if naechsteRouten["routen"][j]["distanz"] > naechsteRouten["routen"][j+1]["distanz"]:
+                        swapped = True
+                        help = naechsteRouten["routen"][j]
+                        naechsteRouten["routen"][j] = naechsteRouten["routen"][j+1]
+                        naechsteRouten["routen"][j+1] = help
+                    
         
         else:#liste ist zwar schon voll koennte aber naeher als eine andere route sein
 
-            dist = ((float(t.longitude)-float(posLon))**2) + ((float(t.latitude)-float(posLat))**2)
+            """dist = ((float(t.description)-float(posLon))**2) + ((float(t.trail)-float(posLat))**2)
 
             for c,i in enumerate(naechsteRouten["routen"]):#an der passenden stelle der groesse nach sortiert einfuegen
                 if i["distanz"] > dist:
@@ -118,10 +181,28 @@ def aktuellerStandort(posLon, posLat):
 
                     naechsteRouten["routen"][c] = {"title":t.name, "pfad":t.previewImage, "distanz":dist}#an aktuelle position die neue route einfuegen
 
-                    break
+                    break"""
+
+            dist = ((float(t.longitude)-float(posLon))**2) + ((float(t.latitude)-float(posLat))**2)
+
+            if dist < naechsteRouten["routen"][5]["distanz"]:
+                naechsteRouten["routen"][5] = {"title":t.name, "pfad":t.previewImage, "distanz":dist}#groesstes ueberschreiben
+
+                #neu sortieren
+                swapped = False
+                for i in range(len(naechsteRouten["routen"])-1):
+                    for j in range(0, len(naechsteRouten["routen"])-1):
+                        if naechsteRouten["routen"][j]["distanz"] > naechsteRouten["routen"][j+1]["distanz"]:
+                            swapped = True
+                            help = naechsteRouten["routen"][j]
+                            naechsteRouten["routen"][j] = naechsteRouten["routen"][j+1]
+                            naechsteRouten["routen"][j+1] = help
+
+            pass
+
+            
 
     return jsonify(naechsteRouten)
-
 
 @views.route('/adminbereich')
 @login_required

@@ -140,9 +140,9 @@
                 htmlString+= '    <div class="card-header">'
                 htmlString+= '        <h3>'+data.routen[key].title+'</h3>'
                 htmlString+= '    </div>'
-                htmlString+= '    <img class="card-img" src="./../static/vorschaubilder/'+data.routen[key].pfad+'" alt="Card image">'
+                htmlString+= '    <img class="card-img" src="./.'+data.routen[key].pfad+'" alt="Card image">'
                 htmlString+= '    <div class="card-footer">'
-                htmlString+= '        <a href="/testRoute" class="btn btn-primary stretched-link">Mehr Details</a>'
+                htmlString+= '        <a href="/routeDetails/'+ key+'" class="btn btn-primary stretched-link">Mehr Details</a>'
                 htmlString+= '    </div>'
                 htmlString+= '</div>'
             }

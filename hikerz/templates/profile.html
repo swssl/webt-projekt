@@ -61,9 +61,9 @@
                                 <a href="#" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h5 class="mb-1">{{t.name}}</h5>
-                                        <small>{{t.duration}}</small>
+                                        <small class="text-secondary">{{t.duration}}min | {{t.distance}}m</small>
                                     </div>
-                                    <p class="mb-1">{{t.description[:20]}}...</p>
+                                    <p class="mb-1 text-secondary">{{t.description[:20]}}...</p>
                                 </a>
                                 {%endfor%}
                                 {%else%}
