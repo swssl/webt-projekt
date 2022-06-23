@@ -4,8 +4,9 @@
 
     <div class="container mt-3">
         <h3>
-            Highlight Details:
+            Neues Highlight erstellen:
         </h3>
+        <form action="" method="post">
             <div class="row">
                 <div class="col">
                     <div class="card">
@@ -14,7 +15,8 @@
                             <!--Name-->
                             <div class="row">
                                 <div class="col">
-                                    
+                                    {{addHighlightForm.name.label(class='form-label')}}
+                                    {{addHighlightForm.name(class='form-control')}}
                                 </div>
                             </div>
 
@@ -56,6 +58,13 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col text-center mt-3">
+                    {{addHighlightForm.submit(class='btn', style="background-color: var(--farbe2)")}}
+                </div>
+            </div>
+        </form>
     </div>
 
 {% endblock %}

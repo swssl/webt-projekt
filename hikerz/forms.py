@@ -6,21 +6,27 @@ from flask_login import current_user
 from flask_wtf import FlaskForm
 from .db import User
 import re
+import gpxpy.gpx
 
 
 
 class AddRouteForm(FlaskForm):
 
-    def getStartCoordinates():
-        # TODO: read first coords from gpx file -> should maybe add format validation for gpx file
-
+    def getStartCoordinates(gpxFile):
         """
-        - read file
-        - get first lon and first lat
-        - return as tuple
+        Returns a tuple of the first coordinate-pair from the specified gpx-file.
+        Returned format: (longitude, latitude)
         """
 
-        return ('51.91158819152654', '8.839563053438653') # default: coords of Hermannsdenkmal
+        try:
+            gpxFile = open(gpxFile, 'r')
+            gpx = gpxpy.parse(gpxFile)
+            gpxPoint = gpx.tracks[0].segments[0].points[0] # first point = start point
+
+            return (gpxPoint.longitude, gpxPoint.latitude)
+
+        except: # if reading gpx-file fails -> return default coords
+            return ('51.91158819152654', '8.839563053438653') # default: Hermannsdenkmal
 
 
     name = StringField('Titel', validators=[DataRequired()])
@@ -49,8 +55,8 @@ class AddRouteForm(FlaskForm):
 
 
 class AddHighlightForm(FlaskForm):
-    name = StringField('Highlight Titel', validators=[DataRequired()])
-    description = StringField('Highlight Beschreibung', validators=[DataRequired()])
+    name = StringField('Titel', validators=[DataRequired()])
+    description = StringField('Beschreibung', validators=[DataRequired()])
     regex = re.compile('^[\w]+\.(jpg|png|jpeg|JPG|JPEG|PNG)$')
     previewImage = FileField(label='Vorschaubild', validators=[Regexp(regex, 'Eine ungültige Bild-Datei wurde ausgewählt! (jpg|png|jpeg)')])
     regex = re.compile('^[\d]{1,3}.[\d]+$')
@@ -71,8 +77,8 @@ class AddRouteImageForm(FlaskForm):
     image = FileField(label='Routenbild', validators=[Regexp(regex, 'Eine ungültige Bild-Datei wurde ausgewählt! (jpg|png|jpeg)')])
     routeId = StringField()
     creator = StringField(default=current_user)
-    # TODO: build path from filename
-    submit = SubmitField('Bild hinzufügen')
+
+    submit = SubmitField('Neues Bild hinzufügen')
 
     def validate(self, extra_validators=None):
         return super().validate(extra_validators)

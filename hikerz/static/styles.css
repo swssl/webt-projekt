@@ -26,6 +26,17 @@
 
 
 
+
+.displayNone {
+    display: none;
+}
+.displayInline {
+    display: initial;
+}
+
+
+
+
 .descriptionBox {
     height: 90%;
 }
@@ -35,11 +46,12 @@
 }
 
 .routeDetails_imageContainer {
-    margin: 0.5em;
+    /* padding: 0.5em; */
+    border: none;
 }
 
 .routeDetails_descriptionBox {
-    background-color: var(--farbe5);
+    background-color: var(--farbe6);
     font-style: italic;
 }
 

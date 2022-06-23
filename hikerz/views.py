@@ -215,19 +215,16 @@ def addRoute():
         newRoute = Route(
             form.data['name'],
             form.data['description'],
-            form.data['trail'],
-            form.data['previewImage'],
+            '/static/routes/' + form.data['trail'],
+            '/static/vorschaubilder/' + form.data['previewImage'],
             form.data['technicalDifficulty'],
             form.data['stamina'],
             form.data['distance'],
             form.data['duration'],
             form.data['longitude'],
             form.data['latitude'],
-            form.data['creator']
+            current_user.username
         )
-        newRoute.creator = current_user.username
-        newRoute.trail = './static/routes/' + newRoute.trail
-        newRoute.previewImage = './static/vorschaubilder/' + newRoute.previewImage
 
         db.session.add(newRoute)
         db.session.commit()
@@ -243,16 +240,14 @@ def routeDetails(routeId):
     highlights = db.session.query(Highlight).join(HighlightInRoute).filter(HighlightInRoute.routeId == routeId).all()
 
     routeImageForm = AddRouteImageForm()
+    addHighlightForm = AddHighlightForm()
 
     if routeImageForm.validate_on_submit():
         newRouteImage = RouteImage(
-            routeImageForm.data['routeId'],
-            routeImageForm.data['image'],
-            routeImageForm.data['creator']
+            routeId,
+            '/static/vorschaubilder/' + routeImageForm.data['image'],
+            current_user.username
         )
-        newRouteImage.routeId = routeId
-        newRouteImage.image = './hikerz/static/vorschaubilder/' + newRouteImage.image
-        newRouteImage.creator = current_user.username
 
         db.session.add(newRouteImage)
         db.session.commit()
@@ -264,120 +259,95 @@ def routeDetails(routeId):
         'routeHighlights.html',
         highlights=highlights, 
         route=route, 
-        routeImageForm=routeImageForm)
+        routeImageForm=routeImageForm,
+        addHighlightForm=addHighlightForm)
 
     
     # If user is logged in, then editing should be enabled (if this route is created by this user).
         # creating new details is also regarded as "editing"
     # If this route is not created by the user, then rating/commenting is possible
     # If user is not logged in, only viewing is possible.
-    """
-    if current_user.username == route.creator:
-        if form.validate_on_submit():
-            newHighlight = Highlight(
-                form.data['hName'],
-                form.data['hDescription'],
-                form.data['previewImage'],
-                form.data['latitude'],
-                form.data['longitude'],
-                form.data['creator']
-            )
-            newHighlight.creator = current_user.username
-            db.session.add(newHighlight)
-            db.session.commit()
-
-    elif current_user.is_authenticated() and current_user.username != route.creator:
-        # logged in user (not creator) can rate / review / comment
-        pass
-    else: # read only for not logged in users
-        # TODO: add validation and use joins for queries
-
-        # highlights
-        highlightsInRoute = HighlightInRoute.query.filter_by(routeId=routeId).all()
-        highlights = []
-        highlightImages = []
-        for hir in highlightsInRoute:
-            highlights.append(Highlight.query.filter_by(id=hir.highlightId).all())
-            highlightImages.append(HighlightImage.query.filter_by(highlightId=hir.highlightId).all())
-        
-        # images
-        routeImages = RouteImage.query.filter_by(routeId=routeId).all()
-
-        # tags
-        tags = TagOfRoute.query.filter_by(routeId=routeId).all()
-
-        # reviews
-        reviews = Review.query.filter_by(routeId=routeId).all()
-        reviewImages = []
-        for review in reviews:
-            reviewImages.append(ReviewImage.query.filter_by(reviewId=review.id).all())
-
-    details = { # maybe build extra data-structure for this...
-        'route' : route,
-        'routeImages' : 'routeImages',
-        'highlights' : 'highlights',
-        'highlightImages' : 'highlightImages',
-        'tags' : 'tags',
-        'reviews' : 'reviews',
-        'reviewImages' : 'reviewImages'
-    }"""
+ 
 
 
-
-@views.route('/routeDetails/<routeId>/routeImages', methods=['GET'])
+@views.route('/routeDetails/<routeId>/routeImages', methods=['GET', 'POST'])
 def routeImages(routeId):
     route = Route.query.filter_by(id=routeId).first()
     images = RouteImage.query.filter_by(routeId=routeId).all()
 
-    return render_template('routeImages.html', images=images, route=route)
+    form = AddRouteImageForm()
+
+    if form.validate_on_submit():
+        newImage = RouteImage(
+            routeId,
+            '/static/vorschaubilder/' + form.data['image'],
+            current_user.username
+        )
+        db.session.add(newImage)
+        db.session.commit()
+
+        return redirect(f'/routeDetails/{ routeId }/routeImages')
+
+    return render_template('routeImages.html', images=images, route=route, routeImageForm=form)
 
 
 
 # @views.route('/routeDetails/<routeId>/highlights', methods=['GET'])
 # def routeHighlights(routeId):
-#     highlights = db.session.query(Highlight).join(HighlightInRoute).filter(HighlightInRoute.routeId == routeId).all()
+#     route = Route.query.filter_by(id=routeId).first()
+#     highlights = Highlight.query.join(HighlightInRoute).filter(HighlightInRoute.routeId == routeId).all()
 
-#     return render_template('routeHighlight.html', highlights=highlights)
-
-
-@views.route('/routeDetails/<routeId>/highlights/<highlightId>', methods=['GET', 'POST'])
-def routeHighlightDetails(highlightId):
-    highlight = Highlight.query.filter(id=highlightId).first()
-
-    return render_template('routeHighlightDetails.html', highlight=highlight)
+#     return render_template('routeHighlights.html', highlights=highlights, route=route)
 
 
-@views.route('/routeDetails/<routeId>/addHighlight', methods=['GET', 'POST'])
+
+# postponed
+# @views.route('/routeDetails/<routeId>/highlight/<highlightId>', methods=['GET', 'POST'])
+# def routeHighlightDetails(routeId, highlightId):
+#     route = Route.query.filter(id=routeId).first()
+#     highlight = Highlight.query.filter(id=highlightId).first()
+
+#     return render_template('routeHighlightDetails.html', highlight=highlight, route=route)
+
+
+
+@views.route('/routeDetails/<routeId>/highlights', methods=['GET', 'POST'])
 def addRouteHighlight(routeId):
+    route = Route.query.filter_by(id=routeId).first()
+    highlights = Highlight.query.join(HighlightInRoute).filter(HighlightInRoute.routeId == routeId).all()
     form = AddHighlightForm()
 
     if form.validate_on_submit():
         newHighlight = Highlight(
             form.data['name'],
             form.data['description'],
-            form.data['previewImage'],
+            '/static/vorschaubilder/' + form.data['previewImage'],
             form.data['latitude'],
             form.data['longitude'],
-            form.data['creator']
+            current_user.username
         )
-        newHighlight.creator = current_user.username
-        newHighlight.previewImage = './static/vorschaubilder/' + newHighlight.previewImage
 
-        highlightRouteAssociation = HighlightInRoute(routeId, newHighlight.id)
+        print('====================================')
+        print(newHighlight)
 
         db.session.add(newHighlight)
+        db.session.commit() # id of new highlight is added on insertion... (???)
+
+        highlightRouteAssociation = HighlightInRoute(routeId, newHighlight.id)
         db.session.add(highlightRouteAssociation)
         db.session.commit()
 
-        return redirect(f'/routeDetails/{ routeId }')
-    
-    return render_template('routeHighlightDetails.html', addHighlightForm=form)
+        return redirect(f'/routeDetails/{ routeId }/highlights')
 
-@views.route('/routeDetails/<routeId>/highlights/<highlightId>/highlightImages', methods=['GET'])
-def highlightImages(highlightId):
-    highlight = Highlight.query.filter_by(highlightId=highlightId).first()
-    images = HighlightImage.query.filter_by(highlightId=highlightId).all()
+    return render_template('routeHighlights.html', addHighlightForm=form, highlights=highlights, route=route)
 
-    return render_template('routeHighlightImages.html', images=images, highlight=highlight)
+
+# postponed
+# @views.route('/routeDetails/<routeId>/highlights/<highlightId>/highlightImages', methods=['GET'])
+# def highlightImages(highlightId):
+#     highlight = Highlight.query.filter_by(highlightId=highlightId).first()
+#     images = HighlightImage.query.filter_by(highlightId=highlightId).all()
+
+#     return render_template('routeHighlightImages.html', images=images, highlight=highlight)
 
 

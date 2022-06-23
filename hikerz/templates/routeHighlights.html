@@ -2,21 +2,24 @@
 
 
 {% block routeDetailsContent %}
-    <div class="container mt-1">
+
+    <div class="container mt-3">
+
         {% if current_user.username == route.creator %}
             <div class="row">
                 <!--add new highlight-->
                 <div class="col">
                     <ul class="nav justify-content-center border-bottom align-middle">
                         <li class="nav-item mx-4 routeDetails_navButton">
-                            <button class="btn float-start" href="/routeDetails/{{ route.id }}/addHighlight" role="button">
+                            <button class="btn float-start" onclick="handleDisplayAddHighlightForm()" role="button">
                                 Neues Highlight
                             </button>
                         </li>
                     </ul>
                 </div>
-                
-                {% block newRouteHighlight %}{% endblock %}
+            </div>
+
+            <div id="newHighlightForm" class="row displayNone">
             </div>
         {% endif %}
 
@@ -32,11 +35,14 @@
                                 {{ highlight.name }}
                             </h3>
                         </div>
-                        <img class="card-img" src="../{{ highlight.previewImage }}" alt="">
+                        <img class="card-img" src="{{ highlight.previewImage }}" alt="Vorschaubild">
                         <div class="card-footer">
-                            <a href="/routeDetails/{{ route.id }}/highlights/{{ highlight.id }}" class="btn btn-primary stretched-link">
+                            <!-- <a href="/routeDetails/{{ route.id }}/highlights/{{ highlight.id }}" class="btn btn-primary stretched-link">
                                 Mehr Details
-                            </a>
+                            </a> -->
+                            <p>
+                                {{ highlight.description }}
+                            </p>
                         </div>
                     </div>
         
@@ -45,5 +51,99 @@
             </div>
         </div>
     </div>
+
+
+
+
+    <div id="addHighlightFormContainer" class="col displayNone">
+        <div class="fluid-container">
+            <div class="container mt-3">
+                <h3>
+                    Neues Highlight erstellen:
+                </h3>
+                <form action="" method="post">
+                    <div class="row">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+        
+                                    <!--Name-->
+                                    <div class="row">
+                                        <div class="col">
+                                            {{addHighlightForm.name.label(class='form-label')}}
+                                            {{addHighlightForm.name(class='form-control')}}
+                                        </div>
+                                    </div>
+        
+                                    <!--Longitude-->
+                                    <div class="row">
+                                        <div class="col">
+                                            {{addHighlightForm.longitude.label(class='form-label')}}
+                                            {{addHighlightForm.longitude(class='form-control')}}
+                                        </div>
+                                    </div>
+        
+                                    <!--Latitude-->
+                                    <div class="row">
+                                        <div class="col">
+                                            {{addHighlightForm.latitude.label(class='form-label')}}
+                                            {{addHighlightForm.latitude(class='form-control')}}
+                                        </div>
+                                    </div>
+        
+                                    <!--Description-->
+                                    <div class="row">
+                                        <div class="col">
+                                            {{addHighlightForm.description.label(class='form-label')}}
+                                            {{addHighlightForm.description(class='form-control')}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        
+        
+                        <!--Preview Image-->
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                    {{addHighlightForm.previewImage.label(class='form-label')}}
+                                    {{addHighlightForm.previewImage(class='form-control')}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="row">
+                        <div class="col text-center mt-3">
+                            {{addHighlightForm.submit(class='btn', style="background-color: var(--farbe2)")}}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // makes form for adding a highlight visible
+        function handleDisplayAddHighlightForm() {
+            let wrapper = document.getElementById('newHighlightForm');
+            wrapper.classList.add('displayInline');
+
+            let fc = document.getElementById('addHighlightFormContainer');
+            fc.classList.add('displayInline');
+
+            wrapper.appendChild(fc);
+        }
+    </script>
+
 {% endblock %}
+
+
+
+
+<!-- 'location.href="/routeDetails/{{ route.id }}/addHighlight"' -->
+
+
 

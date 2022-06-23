@@ -25,20 +25,23 @@
                         </button>
                     </li>
 
-                    <li class="nav-item mx-4 routeDetails_navButton">
-                        <button class="btn float-start" onclick='location.href="/routeDetails/{{ route.id }}/reviews"' role="button">
-                            Reviews
-                        </button>
-                    </li>
-
-
-                    <!--TODO: if user is logged in (and is not creator) -> allow reviewing/rating-->
-                    {%if current_user.is_authenticated() and current_user.username != route.creator %}
+                    <!--REVIEWS POSTPONED-->
+                    {% if False %}
                         <li class="nav-item mx-4 routeDetails_navButton">
-                            <button class="btn float-start" href="/routeReviewAdd" role="button">
-                                Review erstellen
+                            <button class="btn float-start" onclick='location.href="/routeDetails/{{ route.id }}/reviews"' role="button">
+                                Reviews
                             </button>
                         </li>
+
+
+                        <!--TODO: if user is logged in (and is not creator) -> allow reviewing/rating-->
+                        {%if current_user.is_authenticated() and current_user.username != route.creator %}
+                            <li class="nav-item mx-4 routeDetails_navButton">
+                                <button class="btn float-start" href="/routeReviewAdd" role="button">
+                                    Review erstellen
+                                </button>
+                            </li>
+                        {% endif %}
                     {% endif %}
                 </ul>
             </div>
@@ -70,35 +73,6 @@
                             </div>
                         </form>
                     </li>
-
-
-                    <!--Add another highlight image-->
-                    <!--TODO: have to get selected highlight-->
-                    <!-- <li class="nav-item mx-4">
-                        <form method="post">
-                            {{routeImageForm.csrf_token}}
-    
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col">
-                                        {{ routeImageForm.image.label(class="form-label") }}
-                                    </div>
-                                    <div class="col">
-                                        {{ routeImageForm.image(class="form-control") }}
-                                    </div>
-                                    <div class="col">
-                                        {{ routeImageForm.submit(class="btn routeDetails_navButton", style="background-color: var(--farbe6)") }}
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </li> -->
-    
-                    <!-- <li class="nav-item mx-4">
-                        <button class="btn float-start" href="/routeImages" role="button">
-                            Add Highlight Image
-                        </button>
-                    </li> -->
                 </ul>
             </div>
         {% endif %}

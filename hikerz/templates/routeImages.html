@@ -3,19 +3,38 @@
 
 {% block routeDetailsContent %}
 
-    <h2>Bilder zur Route:</h2>
+    <div class="container">
 
-    <div class="row">
-        <p class="routeDetails_descriptionBox">
-            {{ route.description }}
-        </p>
-    </div>
+        <h2>Bilder zur Route:</h2>
 
-    <div class="row">
-        <div class="col">
+
+        <div class="row mt-2 mb-2">
+            <div class="col">
+                <form method="post">
+                    {{routeImageForm.csrf_token}}
+
+                    <div class="row">
+                        <div class="col col-md-4 col-sm-6">
+                            {{ routeImageForm.image(class="form-control") }}
+                        </div>
+                        <div class="col">
+                            {{ routeImageForm.submit(class="btn routeDetails_navButton", style="background-color: var(--farbe6)") }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            <p class="routeDetails_descriptionBox">
+                {{ route.description }}
+            </p>
+        </div>
+
+        <div class="row">
             {% for im in images %}
-                <div class="routeDetails_imageContainer card col-lg-4 col-md-6 col-sm-12 p-3">
-                    <img class="card-img" src="../{{ im.previewImage }}" alt="">
+                <div class="card col-lg-4 col-md-6 p-3 routeDetails_imageContainer">
+                    <img class="card-img" src="{{ im.image }}" alt="Routenbild">
                 </div>
             {% endfor %}
         </div>
