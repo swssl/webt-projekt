@@ -85,31 +85,31 @@
                                         alt="Avatar" style="width:7em">
                                 </div>
                                 <div class="row mb-2">
-                                    <!-- TODO: Hier ist plaatz für statistiken oder so vielleicht -->
                                     <div class="align-center" style="font-size: 1.4em">{{user.username}}</div>
-                                    <small class="text-black-50">Angemeldet seit dem {{user.member_since}}</small>
+                                    <small class="text-black-50">Mitglied seit dem {{user.member_since}}</small>
                                 </div>
                                 {%if current_user.username == user.username%}
                                 <div class="row container-fluid">
                                     <hr class="my-2">
                                 </div>
-                                <div class="row mt-2">
-                                    <div class="mb-2">
-                                        <div class="row">
-                                            {{form.submit(class="btn btn-success")}}
-                                        </div>
-                                        <div class="row mt-2">
-                                            <button class="btn btn-light border border-danger text-danger"
-                                                onclick='if(confirm("Sicher, dass du dein Konto mit dem Benutzernamen {{user.username}} löschen möchstes?")){location.href = "/benutzerLoeschen/{{current_user.username}}";}'>
-                                                Konto Löschen
-                                            </button>
-                                        </div>
+                                <div class="mb-2">
+                                    <div class="row">
+                                        {{form.submit(class="btn profile-input")}}
                                     </div>
+                                    {%endif%}
+                                    {%if current_user.rolle==1 or current_user.username == user.username%}
+                                    <div class="row mt-2">
+                                        <button class="btn btn-light border border-danger text-danger"
+                                            data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal"
+                                            type="button">
+                                            Konto Löschen
+                                        </button>
+                                    </div>
+                                    {%endif%}
                                 </div>
-                                {%endif%}
-                                {%if current_user.rolle==1%}
+                                {%if user.rolle==1%}
                                 <div class="mt-3">
-                                    <h6 class="text-success">Dieses Konto hat Admin-Rechte</h6>
+                                    <h6 class="text-success text-center">Dieses Konto hat Admin-Rechte</h6>
                                 </div>
                                 {%endif%}
                             </div>
@@ -120,5 +120,24 @@
         </form>
     </div>
 </div>
-
+<!-- Confirmation Dialogue for Account deletion -->
+<div class="modal" id="deleteConfirmationModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Konto löschen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bist du dir sicher, das du das Konto mit dem Benutzernamen {{user.username}} endgültig löschen
+                    möchtest?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger"
+                    onclick="window.location.href = '/benutzerLoeschen//{{ user.username }}';">Löschen</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+            </div>
+        </div>
+    </div>
+</div>
 {%endblock%}
