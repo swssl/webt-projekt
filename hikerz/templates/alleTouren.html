@@ -5,7 +5,6 @@
 
     <h1 align="center"> Finde eine spannende Tour für dich </h1>
 
-    <!-- Alle Touren werden angezeigt -->
 
     <div class="col-10 mx-auto">
 
@@ -70,14 +69,11 @@
     var positionLon = '';
     var positionLat = '';
     
-
     var lonLat = new OpenLayers.LonLat( 8.5166646, 53.0166666 ).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject() );
 
     navigator.geolocation.getCurrentPosition(
         function(position){
-            // wenn Position ermittelt werden konnte, liefert
-            //'position.coords.latitude' und 'position.coords.longitude'
-            //die entsprechenden Längen- und Breitengrade
+            // wenn Position ermittelt werden konnte liefert position.coords.latitude und position.coords.longitude die entsprechenden Längen- und Breitengrade
             lonLat = new OpenLayers.LonLat( position.coords.longitude, position.coords.latitude ).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject() );
             
             positionLon = position.coords.longitude;
@@ -87,12 +83,9 @@
             map.setCenter (lonLat, zoom);
 
             tourenInDeinerNaeheFinden();
-
-
         }, 
         function () {
-            // der zweite Funktionsteil wird ausgeführt, wenn keine
-            //Positionsermittlung stattfinden konnte
+            // die zweite Funktion wird ausgeführt, wenn keine Positionsermittlung stattfinden konnte
             lonLat = new OpenLayers.LonLat( 8.7166646, 52.0166666 ).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject() // to Spherical Mercator Projection
             );
 
@@ -104,25 +97,16 @@
 
             tourenInDeinerNaeheNichtGefunden();
     })
-    
-    
-
-    
-
-    
 
     var markers = new OpenLayers.Layer.Markers( "Markers" );
     map.addLayer(markers);
     var size = new OpenLayers.Size(25,25);
     var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
-  
-
-    
+   
     /* einzelne Markierungen setzen */
     {% for t in touren %}
-
-        var lonLat_{{ t.id }} = new OpenLayers.LonLat( {{ t.longitude }}, {{ t.latitude }} )
-            .transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()   );
+    
+        var lonLat_{{ t.id }} = new OpenLayers.LonLat( {{ t.longitude }}, {{ t.latitude }} ).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()   );
         var marker_{{ t.id }} = new OpenLayers.Marker( lonLat_{{ t.id }} );
         marker_{{ t.id }}.events.register("click", map, function(e) { location.href = "/routeDetails/{{ t.id }}"  });
         markers.addMarker(marker_{{ t.id }});
