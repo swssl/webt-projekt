@@ -4,7 +4,7 @@
     --farbe2: #93B7BE;
     --farbe3: #635255;
     --farbe4: #DD9787;
-    --farbe5: #FFD4CA;
+    --farbe5: #89c07f;
     --farbe6: #f1f4e8;
   }
   
@@ -67,4 +67,17 @@
 
 .routeDetails_navButton {
     background-color: var(--farbe6);
+}
+
+.profile-input{
+    background-color: var(--farbe5);
+}
+
+.zoom-animation{
+    transition: transform .2s;
+
+}
+
+.zoom-animation:hover {
+    transform: scale(1.2);
 }
