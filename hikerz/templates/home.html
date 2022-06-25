@@ -10,7 +10,6 @@
 <div class=" d-flex w-100 h-100 p-3 mx-auto flex-column">
     <header class="mb-auto">
         <div class="row">
-            <!-- <div class="col-9"></div> -->
             <div class="col-3 offset-9 p-2">
                 <div style="background-color: white; width:6em; padding:0.5em">
                     <img style="width:5em" src="{{url_for('static',filename='img/hikerz_logo.svg')}}" alt="Hikerz Logo">
@@ -21,7 +20,6 @@
     <main class="px-2">
         <div class="row mt-5 mb-4 text-light">
             <div class="col-md-2"></div>
-            <!-- auf dieser Seite sind mehrere leere divs mit col-md-2, um den Inhalt bei große bildschirmen zu zentrieren -->
             <div class="col">
                 {%if current_user.is_authenticated%}
                 <h1>Willkommen zurück, {{current_user.username}}</h1>
@@ -42,6 +40,7 @@
         </div>
         <div class="row mt-4" style="margin-bottom: 3em">
             <div class="col-md-2"></div>
+
             {%if not current_user.is_authenticated%}
             <div class="col mt-3">
                 <a href="/register" class="btn border bg-secondary order-light border-3 text-light">Konto erstellen</a>
@@ -83,6 +82,7 @@
                 </a>
             </div>
                 {%endif%}
+
         </div>
         <hr class="text-light">
         <div class="row" style="margin-top: 3em">
@@ -138,6 +138,5 @@
             </div>
         </div>
     </footer>
-    <!-- <img src="{{url_for('static', filename='img/forest.svg')}}" style="position: absolute; bottom:-40%; width: 100%; left:0; opacity: 0.4; z-index: -1"> -->
 </div>
 {%endblock%}

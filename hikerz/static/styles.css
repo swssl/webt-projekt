@@ -24,18 +24,12 @@
     width: auto;
 }
 
-
-
-
 .displayNone {
     display: none;
 }
 .displayInline {
     display: initial;
 }
-
-
-
 
 .descriptionBox {
     height: 90%;
@@ -75,7 +69,6 @@
 
 .zoom-animation{
     transition: transform .2s;
-
 }
 
 .zoom-animation:hover {

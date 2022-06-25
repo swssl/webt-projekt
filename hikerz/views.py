@@ -5,22 +5,25 @@ from werkzeug.security import generate_password_hash
 from .db import *
 from .forms import *
 
-# Hier stehen die URL-Endpunkte/Routes
 
 views = Blueprint("views", __name__, template_folder="templates")
 
 @views.route('/')
 def index():
+    """Render homepage. Differentiation between a usere's and anonymous access is done in the template
+        Author: Simon Wessel
+    """
     return render_template("home.html")
-
 
 @views.route('/login', methods=['GET', 'POST'])
 def login():
-    # login view can be used for login an for confirmation
+    """Render login form for user authentication. If a 403 error occurs, we get redirected here. Same if user chages his/her username
+        Author: Simon Wessel
+    """
     if current_user.is_authenticated and not request.args.get("confirm"):  # redirect to home if user is already logged in
         return redirect(url_for("views.index"))
     form = LoginForm()
-    if form.validate_on_submit():  # if valid data ist send by POST:
+    if form.validate_on_submit():  # if valid data is send by POST request:
         user = User.query.filter_by(username=form.data['user_name']).first()  # query user from db
         login_user(user)
         return redirect(url_for("views.index"))
@@ -28,22 +31,30 @@ def login():
 
 @views.route('/register', methods=["GET", "POST"])
 def register():
+    """Render registration form to add a new account to the db.
+        Author: Simon Wessel
+    """
     form = RegistrationForm()
-    if form.validate_on_submit():
+    if form.validate_on_submit():       # Proof if data is valid and user doesnt already exist
         new_user = User(form.data['user_name'],
-                        form.data["email"], form.data["password"], 0) # create new user
+                        form.data["email"], form.data["password"], 0) # Create new user object
         db.session.add(new_user)
-        db.session.commit()     # write new user to db
+        db.session.commit()     # Write new user to db
         return redirect("login")
     return render_template('register.html', registration_form=form)
 
 @views.route('/profil/<username>', methods=["GET", "POST"])
 def profile(username):
+    """Render user profile. If it is current_users one, he/she can edit the data. Author: Simon Wessel
+
+    Args:
+        username (str): Requested username
+    """
     displayed_user = User.query.filter_by(username=username).first() # Get the users data from the database
-    if not displayed_user:
+    if not displayed_user:  # If user wasnt found in the db, display an 404 error
         abort(404)
     form = AccountSettings()
-    if form.validate_on_submit(): # If form is posted, look for changed data and forward it to the currentuser object
+    if form.validate_on_submit(): # If form is POSTed, look for changed data and forward it to the current_user object
         if form.user_name.data:
             current_user.username = form.user_name.data
         if form.email.data:
@@ -51,19 +62,17 @@ def profile(username):
         if form.new_password.data:
             current_user.password = generate_password_hash(form.new_password.data)
         db.session.commit()
-        return redirect(f"/login?confirm={current_user.username}") 
-        # Redirect to login view because the login needs to be refreshed after changing the users username (primary key)
-    displayed_tours = Route.query.filter_by(creator=displayed_user.username).all()
-    return render_template("profile.html", form=form, user = displayed_user, displayed_tours = displayed_tours)
+        return redirect(f"/login?confirm={current_user.username}") # Redirect to login view because the login needs to be refreshed after changing the users username (for technical reasons, data is saved beforehand)
+    # displayed_tours = Route.query.filter_by(creator=displayed_user.username).all() 
+    return render_template("profile.html", form=form, user = displayed_user)#, displayed_tours = displayed_tours)
 
 @views.route('/logout')
 @login_required
 def logout():
-    if current_user.is_authenticated:
-        logout_user()
-        return redirect("/")
-    return render_template(url_for("views.index")) 
-
+    """URL to call in order to log out. Redirect to homepage. Author: Simon Wessel
+    """
+    logout_user()
+    return redirect("/")
 
 @views.route('/routeoverview')
 def routeOverview():    
