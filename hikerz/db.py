@@ -96,6 +96,22 @@ class Route(db.Model):
             "latitude" {self.latitude}, \
             "creator" {self.creator}>'
 
+    def toDict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "trail": self.trail,
+            "previewImage": self.previewImage,
+            "technicalDifficulty": self.technicalDifficulty,
+            "stamina": self.stamina,
+            "distance": self.distance,
+            "duration": self.duration,
+            "longitude": self.longitude,
+            "latitude": self.latitude,
+            "creator": self.creator,
+        }
+
 
 class Highlight(db.Model):
     __tablename__ = 'Highlight'
