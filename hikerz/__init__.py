@@ -1,18 +1,24 @@
-from flask import Flask, render_template
+from flask import Flask
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from os import urandom
 from hikerz.db import *
 from .views import views
 
 
 app = Flask(__name__)
-app.secret_key = b'dev'
+app.secret_key = urandom(12)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Blueprints registration
 app.register_blueprint(views)
 db.init_app(app)
+
+# Flask-Migrate setup
 migrate = Migrate(app, db, render_as_batch=True)
 
+# Flask-Login setup
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "views.login"
