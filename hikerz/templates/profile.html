@@ -9,7 +9,7 @@
         <form action="{{user.benutzername}}" method="post">
             {{form.hidden_tag()}}
             <div class="row gutters-sm">
-                <!-- Accout information area, these can be edited, when visitin xour own profile -->
+                <!-- Accout information area, these can be edited, when visitin your own profile -->
                 <div class="col-md-8 mb-3">
                     <div class="card">
                         <div class="card-body">
@@ -46,6 +46,14 @@
                                     {{form.confirm_password(class="form-control", placeholder="***")}}
                                 </div>
                             </div>
+
+                            <!-- If there Forms validate()-Function found any errors, render them as Bootstrap-alerts: -->
+                            {% if form.errors != {} and request.method != "GET" %}
+                            {% for field, msg in form.errors.items() %}
+                            <div class="alert alert-danger" role="alert">{{ msg[0] }}</div>
+                            {% endfor %}
+                            {% endif %}
+
                             {%endif%}
                         </div>
                     </div>
