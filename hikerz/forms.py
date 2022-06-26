@@ -77,18 +77,28 @@ class AddHighlightImageForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
+    """WTForm class for the login form. Author:  Simon Wessel
+
+    Args:
+        FlaskForm (class): Class inherits from the FlaskForm class
+    """
     user_name = StringField('Benutzername', validators=[InputRequired()])
     password = PasswordField('Passwort', validators=[InputRequired()])
     submit = SubmitField('Anmelden')
 
     def validate(self):     #Extends the validate-function
+        """Custom validate function that tests for user existence and password correctness. 
+        When data is invalid, add error messages that are rendered on the page. Author: Simon Wessel
+
+        Returns:
+            bool: True if user can be logged in, False if data is invalid
+        """
         if not super(LoginForm, self).validate():
             return False
         user = User.query.filter_by(username=self.user_name.data).first()
         if not user:     # tests if username exists
             self.user_name.errors.append("Ungültige Login-Daten")
             return False
-        # if user.password != self.password.data:     #Tests if password is correct
         if not user.check_password(self.password.data):     #Tests if password is correct
             self.password.errors.append('Ungültige Login-Daten')
             return False
@@ -96,6 +106,11 @@ class LoginForm(FlaskForm):
 
 
 class RegistrationForm(FlaskForm):
+    """WTForm class for the registration form. Author:  Simon Wessel
+
+    Args:
+        FlaskForm (class): Class inherits from the FlaskForm class
+    """
     user_name = StringField('Benutzername', validators=[InputRequired()])
     email = StringField(
         'E-Mail Addresse', validators=[Email(message="Bitte überprüfe die E-Mail-Adresse")])
@@ -108,6 +123,12 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField("Konto erstellen")
 
     def validate(self):
+        """Custom validate function that tests the data contextually. When data is invalid, add error messages that are rendered on the page.
+        Author: Simon Wessel
+
+        Returns:
+            bool: True if user can be create. False, when data is invalid.
+        """
         if not super(RegistrationForm, self).validate():
             return False
         user = User.query.filter_by(username=self.user_name.data).first()
@@ -118,10 +139,14 @@ class RegistrationForm(FlaskForm):
         
 
 class AccountSettings(FlaskForm):
+    """WTForms class for the Account settings
+
+    Args:
+        FlaskForm (class): see above
+    """
     user_name = StringField('Benutzername')
     email = StringField(
         'E-Mail Addresse', validators=[Email("Bitte überprüfe die E-Mail-Adresse")])
-    # old_password = PasswordField('Altes Passwort', validators=[DataRequired()])
     new_password = PasswordField('Neues Passwort', [
         EqualTo('confirm_password', message='Die Passwörter stimmen nicht überein')
     ])
@@ -129,6 +154,12 @@ class AccountSettings(FlaskForm):
     submit = SubmitField("Änderungen speichern")
 
     def validate(self):
+        """Custom validate function that tests the data contextually. When data is invalid, add error messages that are rendered on the page.
+        Author: Simon Wessel
+
+        Returns:
+            bool: True if data can be written to db. False, when data is invalid.
+        """
         if not super().validate():
             return False
         if self.user_name.data != current_user.username and User.query.filter_by(username=self.user_name.data).first():

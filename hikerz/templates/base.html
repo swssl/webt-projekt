@@ -126,13 +126,13 @@
 
     <!-- Navigattionselemente am Boden der Seite -->
     <ul class="nav justify-content-center fixed-bottom border-top align-middle" style="background-color:white">
-        <li class="nav-item mx-4">
+        <li class="nav-item mx-4 zoom-animation">
             <button class="btn float-start" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" role="button"
                 style="height:3em">
                 <i class="fa fa-bars fa-xl"></i>
             </button>
         </li>
-        <li class="nav-item mx-4">
+        <li class="nav-item mx-4 zoom-animation">
             {%if current_user.is_authenticated%}
             <a class="btn float-start py-2" href="{{url_for('views.index')}}" role="button">
                 <i class="fa fa-house fa-xl"></i>
@@ -143,7 +143,7 @@
             </a>
             {%endif%}
         </li>
-        <li class="nav-item mx-4">
+        <li class="nav-item mx-4 zoom-animation">
             <button class="btn float-start" onclick="window.history.back()" role="button" style="height:3em">
                 <i class="fa fa-arrow-left fa-xl"></i>
             </button>

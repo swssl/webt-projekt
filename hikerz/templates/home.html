@@ -2,15 +2,14 @@
 {%block header%}
 <style>
     body {
-        background-color: #635255;
+        background-color: #55664a;
     }
 </style>
 {%endblock%}
 {%block content%}
-<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+<div class=" d-flex w-100 h-100 p-3 mx-auto flex-column">
     <header class="mb-auto">
         <div class="row">
-            <!-- <div class="col-9"></div> -->
             <div class="col-3 offset-9 p-2">
                 <div style="background-color: white; width:6em; padding:0.5em">
                     <img style="width:5em" src="{{url_for('static',filename='img/hikerz_logo.svg')}}" alt="Hikerz Logo">
@@ -21,7 +20,6 @@
     <main class="px-2">
         <div class="row mt-5 mb-4 text-light">
             <div class="col-md-2"></div>
-            <!-- auf dieser Seite sind mehrere leere divs mit col-md-2, um den Inhalt bei große bildschirmen zu zentrieren -->
             <div class="col">
                 {%if current_user.is_authenticated%}
                 <h1>Willkommen zurück, {{current_user.username}}</h1>
@@ -42,6 +40,7 @@
         </div>
         <div class="row mt-4" style="margin-bottom: 3em">
             <div class="col-md-2"></div>
+
             {%if not current_user.is_authenticated%}
             <div class="col mt-3">
                 <a href="/register" class="btn border bg-secondary order-light border-3 text-light">Konto erstellen</a>
@@ -50,39 +49,40 @@
             </div>
             {%else%}
             <div class="col">
-                <a class="d-flex ms-4 align-items-start text-light text-decoration-none" href="/routeoverview">
+                <a class="d-flex ms-4 align-items-start text-light text-decoration-none zoom-animation" href="/routeoverview">
                     <div class="col me-2">
-                        <i class="fa fa-person-hiking fa-xl" style="color:var(--farbe2)"></i>
+                        <i class="fa fa-person-hiking fa-xl"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold mb-0" style="color:var(--farbe2)">Los Geht's</h4>
-                        <p style="color:var(--farbe2)">Endecke Wandertouren in deiner Umgebung, die von anderen hochgeladen wurden.</p>
+                        <h4 class="fw-bold mb-0">Los Geht's</h4>
+                        <p>Endecke Wandertouren in deiner Umgebung, die von anderen hochgeladen wurden.</p>
                     </div>
                 </a>
             </div>
             <div class="col">
-                <a class="d-flex ms-4 align-items-start text-light text-decoration-none" href="#">
+                <a class="d-flex ms-4 align-items-start text-light text-decoration-none zoom-animation" href="#">
                     <div class="col me-2">
-                        <i class="fa fa-share-nodes fa-xl" style="color:var(--farbe2)"></i>
+                        <i class="fa fa-share-nodes fa-xl"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold mb-0" style="color:var(--farbe2)">Wanderung teilen</h4>
-                        <p style="color:var(--farbe2)">Lade eine neue Wandertour hoch und erzähl anderen von deinen Erfahrungen.</p>
+                        <h4 class="fw-bold mb-0">Wanderung teilen</h4>
+                        <p></p>Lade eine neue Wandertour hoch und erzähl anderen von deinen Erfahrungen.</p>
                     </div>
                 </a>
             </div>
             <div class="col">
-                <a class="d-flex ms-4 align-items-start text-light text-decoration-none" href="/profil/{{current_user.username}}">
+                <a class="d-flex ms-4 align-items-start text-light text-decoration-none zoom-animation" href="/profil/{{current_user.username}}">
                     <div class="col me-2">
-                        <i class="fa fa-address-card fa-xl" style="color:var(--farbe2)"></i>
+                        <i class="fa fa-address-card fa-xl"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold mb-0" style="color:var(--farbe2)">Kontoeinstellungen</h4>
-                        <p style="color:var(--farbe2)">Benutzername und Passwort ändern, hochgeladene Wandertouren ansehen</p>
+                        <h4 class="fw-bold mb-0">Kontoeinstellungen</h4>
+                        <p>Benutzername und Passwort ändern, hochgeladene Wandertouren ansehen</p>
                     </div>
                 </a>
             </div>
                 {%endif%}
+
         </div>
         <hr class="text-light">
         <div class="row" style="margin-top: 3em">
@@ -128,7 +128,7 @@
     </main>
     <footer>
         <div class="row">
-            <div class="col-md-3"></div>
+            <div class="col-md-3 mb-2"></div>
             <div class="col">
                 <p>
                     Hikerz übernimmt keine Garantien bzgl. der dargestellten Routen und keine Haftung bei Sach- oder
