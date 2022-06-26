@@ -58,26 +58,81 @@
                         </div>
                     </div>
                     <div class="card mt-4">
-                        <div class="card-body">
+                        <div class="card-header bg-white">
                             <h4>{{user.username}}s Touren:</h4>
-                            <div class="list-group">
-                                {%if displayed_tours%}
-                                {%for t in displayed_tours%}
-                                <a href="#" class="list-group-item list-group-item-action">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">{{t.name}}</h5>
-                                        <small class="text-secondary">{{t.duration}}min | {{t.distance}}m</small>
-                                    </div>
-                                    <p class="mb-1 text-secondary">{{t.description[:20]}}...</p>
-                                </a>
-                                {%endfor%}
-                                {%else%}
-                                <div class="mt-3 d-flex flex-column align-items-center text-center">
-                                    <h3 class="text-black-50 fst-italic">{{user.username}} hat noch keine Touren
-                                        veröffentlicht.</h3>
-                                </div>
-                                {%endif%}
+                        </div>
+                        <div class="card-body overflow-scroll" style="height: 20em;" id="routes-card-body">
+                            <div class="list-group" id="routes-list-group">
                             </div>
+                            <div class="d-flex justify-content-center mt-2">
+                                <div class="spinner-grow" role="status" id="ajax-loading">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex-column align-items-center text-center" id="no-routes-alert">
+                                <h3 class="text-black-50 fst-italic">{{user.username}} hat noch keine Touren veröffentlicht.</h3>
+                            </div>
+
+                            <script>
+                                $('#no-routes-alert').hide();
+                                var page = 1;  /* the page var is incremented with every API request*/
+                                var username = "{{user.username}}";
+                                listgroup = $('#routes-list-group');
+                                function getNewData() {
+                                    if (page != -1) {       /* Test, if all data has been feched*/
+                                        $.ajax({
+                                            url: `/api/routes/${username}`,
+                                            data: {
+                                                "first": page * 10 - 9,  /* Every API request gets ten more routes to render*/
+                                                "last": page * 10,
+                                            },
+                                            success: function (data, s, x) {
+                                                if (data.response.length > 0) {
+                                                    for (let i = 0; i < data.response.length; i++) {
+                                                        listgroup[0].insertAdjacentHTML('beforeend', `<a href="/routeDetails/${data.response[i].id}" class="list-group-item list-group-item-action">
+                                                        <div class="d-flex w-100 justify-content-between">
+                                                            <h5 class="mb-1">${data.response[i].name}</h5>
+                                                            <small class="text-secondary">${data.response[i].duration}min | ${data.response[i].distance}m</small>
+                                                        </div>
+                                                        <p class="mb-1 text-secondary">${data.response[i].description.slice(0, 20)}...</p>
+                                                    </a>`
+                                                        );
+                                                    }
+                                                    page = page + 1;
+                                                } else {
+                                                    if(page==1){
+                                                        $('#no-routes-alert').show();
+                                                    }
+                                                        $('#ajax-loading').hide(); /*When there is nothng to get from the server, hide spinner and set page to -1*/
+                                                    page = -1;
+                                                }
+                                                console.log("API Fertig mit ", data.response.length);
+                                            }
+                                        });
+
+                                    }
+                                }
+
+
+                                $('#routes-card-body')[0].addEventListener( /*trigger getNewdata when list is scrolled to the end*/
+                                    'scroll',
+                                    function () {
+                                        var scrollTop = $('#routes-card-body')[0].scrollTop;
+                                        var scrollHeight = $('#routes-card-body')[0].scrollHeight; // added
+                                        var offsetHeight = $('#routes-card-body')[0].offsetHeight;
+                                        // var clientHeight = document.getElementById('box').clientHeight;
+                                        var contentHeight = scrollHeight - offsetHeight; // added
+                                        if (contentHeight <= scrollTop) // modified
+                                        {
+                                            getNewData();
+                                        }
+                                    },
+                                    false
+                                )
+                                getNewData();
+                            </script>
+
+
                         </div>
                     </div>
                 </div>

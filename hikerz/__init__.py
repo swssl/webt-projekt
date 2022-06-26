@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from os import urandom
 from hikerz.db import *
 from .views import views
+from .api import api
 
 
 app = Flask(__name__)
@@ -13,6 +14,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Blueprints registration
 app.register_blueprint(views)
+app.register_blueprint(api)
 db.init_app(app)
 
 # Flask-Migrate setup
