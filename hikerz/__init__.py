@@ -1,14 +1,14 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_migrate import Migrate
-from os import urandom
+from secrets import token_bytes
 from hikerz.db import *
 from .views import views
 from .api import api
 
 
 app = Flask(__name__)
-app.secret_key = urandom(12)
+app.secret_key = token_bytes(12)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
