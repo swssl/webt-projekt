@@ -1,0 +1,16 @@
+{
+    "name": "Hikerz",
+    "short_name": "Hikerz",
+    "start_url": "/",
+    "display": "fullscreen",
+    "icons": [
+        {
+            "sizes": "32x32",
+            "src": "/static/ing/favicon.svg"
+        },
+        {
+            "sizes": "120x120",
+            "src": "/static/img/hikerz_logo.svg"
+        }
+    ]
+}
