@@ -1,1 +1,1 @@
-web: gunicorn hikerz:app
+web: gunicorn hikerz:app --preload
