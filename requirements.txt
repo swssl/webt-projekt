@@ -7,3 +7,4 @@ python-dotenv
 gpxpy
 email-validator
 gunicorn
+geopy
