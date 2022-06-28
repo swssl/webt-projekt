@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@mapbox/geojson-coords": "^0.0.2",
+    "@tmcw/togeojson": "^5.2.1"
+  }
+}

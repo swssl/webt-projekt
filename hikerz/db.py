@@ -57,7 +57,7 @@ class Route(db.Model):
     previewImage = db.Column(db.String(255), nullable=False, default='PathToDefaultImage')
     technicalDifficulty = db.Column(db.Integer(), nullable=True)
     stamina = db.Column(db.Integer(), nullable=True)
-    distance = db.Column(db.Integer(), nullable=False) # distance in meters -> get from gpx
+    distance = db.Column(db.Integer(), nullable=False) # is read from gpx
     duration = db.Column(db.Integer(), nullable=True)
     longitude = db.Column(db.String(15), nullable=False)
     latitude = db.Column(db.String(15), nullable=False)
@@ -120,32 +120,27 @@ class Highlight(db.Model):
     name = db.Column(db.String(45), nullable=False, default='Neues Highlight')
     description = db.Column(db.String(1024), nullable=True)
     previewImage = db.Column(db.String(255), nullable=False, default='PathToDefaultImage')
-    latitude =  db.Column(db.String(15), nullable=False)
-    longitude = db.Column(db.String(15), nullable=False)
     creator = db.Column(db.String(45), db.ForeignKey('User.username'))
-    route = db.Column(db.Integer(), db.ForeignKey('Route.id'))
+    routeId = db.Column(db.Integer(), db.ForeignKey('Route.id'))
+    route = db.relationship('Route', back_populates='routeHighlight')
     creatorRelationship = db.relationship('User', back_populates='creatorOfHighlight')
     highlightImage = db.relationship('HighlightImage', back_populates='highlight')
 
-    def __init__(self, name, description, previewImage, latitude, longitude, creator, route) -> None:
+    def __init__(self, name, description, previewImage, creator, routeId) -> None:
         super().__init__()
         self.name = name
         self.description = description
         self.previewImage = previewImage
-        self.latitude = latitude
-        self.longitude = longitude
         self.creator = creator
-        self.route = route
+        self.routeId = routeId
 
     def __repr__(self) -> str:
         return f'<Highlight \
             "name" {self.name}, \
             "description" {self.description}, \
             "previewImage" {self.previewImage}, \
-            "latitude" {self.latitude}, \
-            "longitude" {self.longitude}, \
             "creator" {self.creator}, \
-            "route" {self.route}>'
+            "routeId" {self.routeId}>'
 
 
 class RouteImage(db.Model):

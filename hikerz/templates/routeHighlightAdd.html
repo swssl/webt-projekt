@@ -6,7 +6,7 @@
         <h3>
             Neues Highlight erstellen:
         </h3>
-        <form action="" method="post">
+        <form action="/routeDetails/{{  }}" method="post" enctype="multipart/form-data">
             <div class="row">
                 <div class="col">
                     <div class="card">
@@ -17,22 +17,6 @@
                                 <div class="col">
                                     {{addHighlightForm.name.label(class='form-label')}}
                                     {{addHighlightForm.name(class='form-control')}}
-                                </div>
-                            </div>
-
-                            <!--Longitude-->
-                            <div class="row">
-                                <div class="col">
-                                    {{addHighlightForm.longitude.label(class='form-label')}}
-                                    {{addHighlightForm.longitude(class='form-control')}}
-                                </div>
-                            </div>
-
-                            <!--Latitude-->
-                            <div class="row">
-                                <div class="col">
-                                    {{addHighlightForm.latitude.label(class='form-label')}}
-                                    {{addHighlightForm.latitude(class='form-control')}}
                                 </div>
                             </div>
 

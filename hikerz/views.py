@@ -1,9 +1,13 @@
+import os
 import gpxpy.gpx
+from geopy.distance import geodesic
 from flask import Blueprint, render_template, redirect, request, abort, url_for, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.security import generate_password_hash
+from werkzeug.utils import secure_filename
 from .db import *
 from .forms import *
+
 
 
 views = Blueprint("views", __name__, template_folder="templates")
@@ -184,55 +188,141 @@ def adminbereichRechteVerringern(userID):
     return redirect('/adminbereich')#auf adminbereich verlinken
 
 
-@views.route('/addRoute', methods=['GET', 'POST'])
+@views.route('/deleteRoute/<routeId>')
+@login_required
+def deleteRoute(routeId):
+    """Deletes a route.\n
+        This is done by deleting all referencing items from the database:
+        - route-images
+        - tags of route
+        - highlights
+        - highlight-images
+        - reviews
+        - review-images
+        - the route itself
+
+        Author: Simon Enns
+    """
+    # Only the creator of a route can delete a route
+    if current_user.username == Route.query.filter(Route.id == routeId).first().creator:
+        RouteImage.query.filter(RouteImage.routeId == routeId).delete()
+        TagOfRoute.query.filter(TagOfRoute.routeId == routeId).delete()
+        
+        highlights = Highlight.query.filter(Highlight.routeId == routeId).all()
+        Highlight.query.filter(Highlight.routeId == routeId).delete()
+        for highlight in highlights:
+            HighlightImage.query.filter(HighlightImage.highlightId == highlight.id)
+        
+        reviews = Review.query.filter(Review.routeId == routeId).all()
+        Review.query.filter(Review.routeId == routeId).delete()
+        for review in reviews:
+            ReviewImage.query.filter(ReviewImage.reviewId == review.id).delete()
+        
+        Route.query.filter(Route.id == routeId).delete()
+
+        db.session.commit()
+
+        return redirect('/') # redirect to home after deletion
+    
+    return redirect(request.url)
+
+
+@views.route('/addRoute', methods=['GET'])
 @login_required
 def addRoute():
-    form = AddRouteForm()
+    """Renders the HTML for adding a route.
+        Author: Simon Enns
+    """
+    return render_template('addRoute.html', addRouteForm=AddRouteForm())
 
-    if form.validate_on_submit():
+
+@views.route('/addRoute/upload', methods=['POST'])
+def uploadNewRoute():
+    """Creates a new route:
+        - Uploads gpx- and image-files into the correspondig static-folder (from request)
+        - reads first point from gpx-file and sets the start-latitude and start-longitude
+        - instantiates a new Route and commits it to the database
+
+        Author: Simon Enns
+    """
+    try:
+        trailFile = request.files.get('trail')
+        # 'secure_filename' prohibits invalid and/or potentially malicious filenames
+        trailFile.save(os.path.join('hikerz/static/routes', secure_filename(trailFile.filename)))
+        previewImageFile = request.files.get('previewImage')
+        previewImageFile.save(os.path.join('hikerz/static/vorschaubilder', secure_filename(previewImageFile.filename)))
+
+        try:
+            f = open('hikerz/static/routes/' + trailFile.filename, 'r')
+            gpxFile = gpxpy.parse(f)
+
+            if len(gpxFile.tracks) != 0:
+                track = gpxFile.tracks[0].segments[0]
+                p = track.points[0] # first point = start point
+            elif len(gpxFile.routes) != 0:
+                track = gpxFile.routes[0]
+                p = track.points[0] # first point = start point
+            
+            coords = (p.latitude, p.longitude)
+
+        except: # if reading gpx-file fails -> return default coords
+            coords = ('8.8395630534', '51.9115881915') # default: Coordinates of the Hermannsdenkmal
+
         newRoute = Route(
-            form.data['name'],
-            form.data['description'],
-            '/static/routes/' + form.data['trail'],
-            '/static/vorschaubilder/' + form.data['previewImage'],
-            form.data['technicalDifficulty'],
-            form.data['stamina'],
-            form.data['distance'],
-            form.data['duration'],
-            form.data['longitude'],
-            form.data['latitude'],
+            request.form.get('name'),
+            request.form.get('description'),
+            '/static/routes/' + trailFile.filename,
+            '/static/vorschaubilder/' + previewImageFile.filename,
+            int(request.form.get('technicalDifficulty')),
+            int(request.form.get('stamina')),
+            calculateTrailDistance(track.points),
+            int(request.form.get('duration')),
+            coords[0], # longitude
+            coords[1], # latitude
             current_user.username
         )
 
-        try:
-            gpxFile = open('.' + newRoute.trail, 'r')
-            gpx = gpxpy.parse(gpxFile)
-            gpxPoint = gpx.tracks[0].segments[0].points[0] # first point = start point
-            coords = (gpxPoint.longitude, gpxPoint.latitude)
-
-        except: # if reading gpx-file fails -> return default coords
-            coords = ('51.9115881915', '8.8395630534') # default: Hermannsdenkmal
-
-        newRoute.longitude = coords[0]
-        newRoute.latitude = coords[1]
-
         db.session.add(newRoute)
         db.session.commit()
+                
+    except:
+        return redirect('/addRoute')
 
-        return redirect(f'/routeDetails/{newRoute.id}')
+    return redirect(f'/routeDetails/{ newRoute.id }')
 
-    return render_template('addRoute.html', addRouteForm=form)
+
+def calculateTrailDistance(points) -> int:
+    """Calculates the distance of the track from the passed list of treckpoints.
+        Author: Simon Enns
+    """
+    distance = 0
+    if len(points) > 0:
+        for i in range(len(points) - 1):
+            if points[i + 1]:
+                distance += geodesic(getPoint(points[i]), getPoint(points[i + 1])).meters
+    return int(distance)
+
+
+def getPoint(p) -> tuple:
+    """Get point as tuple in format '(lat, lon)'
+        Author: Simon Enns
+    """
+    return (p.latitude, p.longitude)
 
 
 @views.route('/routeDetails/<routeId>', methods=['GET', 'POST'])
 def routeDetails(routeId):
     route = Route.query.filter_by(id=routeId).first()
-    highlights = db.session.query(Highlight).join(HighlightInRoute).filter(HighlightInRoute.routeId == routeId).all()
+    highlights = Highlight.query.filter(routeId == routeId).all()
 
     routeImageForm = AddRouteImageForm()
     addHighlightForm = AddHighlightForm()
 
     if routeImageForm.validate_on_submit():
+        if request.method == 'POST':
+            previewImageFile = request.files.get('routeImage')
+            previewImageFile.save(os.path.join('hikerz/static/vorschaubilder', secure_filename(previewImageFile.filename)))
+
         newRouteImage = RouteImage(
             routeId,
             '/static/vorschaubilder/' + routeImageForm.data['image'],
@@ -246,6 +336,11 @@ def routeDetails(routeId):
     
 
     if addHighlightForm.validate_on_submit():
+        if request.method == 'POST':
+            previewImageFile = request.files.get('highlightPreviewImage')
+            previewImageFile.save(os.path.join('hikerz/static/vorschaubilder', secure_filename(previewImageFile.filename)))
+
+
         newHighlight = Highlight(
             addHighlightForm.data['name'],
             addHighlightForm.data['description'],
@@ -256,11 +351,8 @@ def routeDetails(routeId):
         )
 
         db.session.add(newHighlight)
-        db.session.commit() # id of new highlight is added on insertion... (???)
-
-        highlightRouteAssociation = HighlightInRoute(routeId, newHighlight.id)
-        db.session.add(highlightRouteAssociation)
         db.session.commit()
+
 
         return redirect(f'/routeDetails/{ route.id }')
 
@@ -271,12 +363,6 @@ def routeDetails(routeId):
         routeImageForm=routeImageForm,
         addHighlightForm=addHighlightForm)
 
-    
-    # If user is logged in, then editing should be enabled (if this route is created by this user).
-        # creating new details is also regarded as "editing"
-    # If this route is not created by the user, then rating/commenting is possible
-    # If user is not logged in, only viewing is possible.
- 
 
 
 @views.route('/routeDetails/<routeId>/routeImages', methods=['GET', 'POST'])
@@ -300,30 +386,10 @@ def routeImages(routeId):
     return render_template('routeImages.html', images=images, route=route, routeImageForm=form)
 
 
-
-# @views.route('/routeDetails/<routeId>/highlights', methods=['GET'])
-# def routeHighlights(routeId):
-#     route = Route.query.filter_by(id=routeId).first()
-#     highlights = Highlight.query.join(HighlightInRoute).filter(HighlightInRoute.routeId == routeId).all()
-
-#     return render_template('routeHighlights.html', highlights=highlights, route=route)
-
-
-
-# postponed
-# @views.route('/routeDetails/<routeId>/highlight/<highlightId>', methods=['GET', 'POST'])
-# def routeHighlightDetails(routeId, highlightId):
-#     route = Route.query.filter(id=routeId).first()
-#     highlight = Highlight.query.filter(id=highlightId).first()
-
-#     return render_template('routeHighlightDetails.html', highlight=highlight, route=route)
-
-
-
 @views.route('/routeDetails/<routeId>/highlights', methods=['GET', 'POST'])
 def addRouteHighlight(routeId):
     route = Route.query.filter_by(id=routeId).first()
-    highlights = Highlight.query.join(HighlightInRoute).filter(HighlightInRoute.routeId == routeId).all()
+    highlights = Highlight.query.filter(routeId == routeId).all()
     form = AddHighlightForm()
 
     if form.validate_on_submit():
@@ -331,29 +397,12 @@ def addRouteHighlight(routeId):
             form.data['name'],
             form.data['description'],
             '/static/vorschaubilder/' + form.data['previewImage'],
-            form.data['latitude'],
-            form.data['longitude'],
             current_user.username
         )
 
         db.session.add(newHighlight)
-        db.session.commit() # id of new highlight is added on insertion... (???)
-
-        highlightRouteAssociation = HighlightInRoute(routeId, newHighlight.id)
-        db.session.add(highlightRouteAssociation)
         db.session.commit()
 
         return redirect(f'/routeDetails/{ route.id }/highlights')
 
     return render_template('routeHighlights.html', addHighlightForm=form, highlights=highlights, route=route)
-
-
-# postponed
-# @views.route('/routeDetails/<routeId>/highlights/<highlightId>/highlightImages', methods=['GET'])
-# def highlightImages(highlightId):
-#     highlight = Highlight.query.filter_by(highlightId=highlightId).first()
-#     images = HighlightImage.query.filter_by(highlightId=highlightId).all()
-
-#     return render_template('routeHighlightImages.html', images=images, highlight=highlight)
-
-

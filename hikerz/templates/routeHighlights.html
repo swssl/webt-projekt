@@ -26,28 +26,33 @@
 
         <div class="row">
             <div class="col">
+                {% if highlights|count > 0 %}
+                    {% for highlight in highlights %}
+                    
+                        <div class="card bg-dark text-white col-lg-4 col-md-6 p-3 border bg-light">
+                            <div class="card-header">
+                                <h3>
+                                    {{ highlight.name }}
+                                </h3>
+                            </div>
+                            <img class="card-img" src="{{ highlight.previewImage }}" alt="Vorschaubild">
+                            <div class="card-footer">
+                                <p>
+                                    {{ highlight.description }}
+                                </p>
+                            </div>
+                        </div>
+            
+                    {% endfor %}
+                {% endif %}
 
-                {% for highlight in highlights %}
-                
-                    <div class="card bg-dark text-white col-lg-4 col-md-6 p-3 border bg-light">
-                        <div class="card-header">
-                            <h3>
-                                {{ highlight.name }}
-                            </h3>
-                        </div>
-                        <img class="card-img" src="{{ highlight.previewImage }}" alt="Vorschaubild">
-                        <div class="card-footer">
-                            <!-- <a href="/routeDetails/{{ route.id }}/highlights/{{ highlight.id }}" class="btn btn-primary stretched-link">
-                                Mehr Details
-                            </a> -->
-                            <p>
-                                {{ highlight.description }}
-                            </p>
-                        </div>
+                {% if highlights|count == 0 %}
+                    <div>
+                        <p>
+                            Für diese Route wurden noch keine Highlights angelegt. Der Ersteller einer Route kann Highlights hinzufügen.
+                        </p>
                     </div>
-        
-                {% endfor %}
-    
+                {% endif %}
             </div>
         </div>
     </div>
@@ -61,7 +66,7 @@
                 <h3>
                     Neues Highlight erstellen:
                 </h3>
-                <form action="" method="post">
+                <form method="post" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col">
                             <div class="card">
@@ -72,22 +77,6 @@
                                         <div class="col">
                                             {{addHighlightForm.name.label(class='form-label')}}
                                             {{addHighlightForm.name(class='form-control')}}
-                                        </div>
-                                    </div>
-        
-                                    <!--Longitude-->
-                                    <div class="row">
-                                        <div class="col">
-                                            {{addHighlightForm.longitude.label(class='form-label')}}
-                                            {{addHighlightForm.longitude(class='form-control')}}
-                                        </div>
-                                    </div>
-        
-                                    <!--Latitude-->
-                                    <div class="row">
-                                        <div class="col">
-                                            {{addHighlightForm.latitude.label(class='form-label')}}
-                                            {{addHighlightForm.latitude(class='form-control')}}
                                         </div>
                                     </div>
         
@@ -141,9 +130,6 @@
 {% endblock %}
 
 
-
-
-<!-- 'location.href="/routeDetails/{{ route.id }}/addHighlight"' -->
 
 
 
