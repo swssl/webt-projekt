@@ -5,4 +5,5 @@ Flask-Migrate
 Flask-WTF
 python-dotenv
 gpxpy
+email-validator
 gunicorn
