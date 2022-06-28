@@ -13,16 +13,16 @@ class AddRouteForm(FlaskForm):
     name = StringField('Titel', validators=[DataRequired()])
     description = TextAreaField('Beschreibung', validators=[DataRequired()])
 
-    distance = IntegerField('Distanz in Metern', validators=[DataRequired(), NumberRange(0, inf, 'Es muss eine Distanz (in Metern) größer als 0 angegeben werden.')])
+    distance = IntegerField()
     duration = IntegerField('Dauer in Minuten', validators=[NumberRange(0, inf, 'Es muss eine Dauer (in Minuten) länger als 0 angegeben werden.')])
     technicalDifficulty = RadioField(label='Technische Schwierigkeit', choices=[('1', 'Einfach'), ('2', ''), ('3', ''), ('4', ''), ('5', 'Schwer')], default='1', coerce=int)
     stamina = RadioField(label='Ausdauer', choices=[('1', 'Gering'), ('2', ''), ('3', ''), ('4', ''), ('5', 'Hoch')], default='1', coerce=int)
 
     # The regular expressions validate the file-paths (especially the types)
     regexGpx = re.compile('^[\w]+\.(gpx|GPX)$')
-    trail = FileField(label='GPX-Datei', validators=[Regexp(regexGpx, 'Eine ungültige GPX-Datei wurde ausgewählt!')])
+    trail = FileField(label='GPX-Datei', name='trail', validators=[Regexp(regexGpx, 'Eine ungültige GPX-Datei wurde ausgewählt!'), DataRequired()])
     regexImage = re.compile('^[\w]+\.(jpg|png|jpeg|JPG|JPEG|PNG)$')
-    previewImage = FileField(label='Vorschaubild', validators=[Regexp(regexImage, 'Eine ungültige Bild-Datei wurde ausgewählt! (jpg|png|jpeg)')])
+    previewImage = FileField(label='Vorschaubild', name='previewImage', validators=[Regexp(regexImage, 'Eine ungültige Bild-Datei wurde ausgewählt! (jpg|png|jpeg)'), DataRequired()])
 
     longitude = StringField()
     latitude = StringField()
@@ -37,11 +37,7 @@ class AddHighlightForm(FlaskForm):
     name = StringField('Titel', validators=[DataRequired()])
     description = StringField('Beschreibung', validators=[DataRequired()])
     regex = re.compile('^[\w]+\.(jpg|png|jpeg|JPG|JPEG|PNG)$')
-    previewImage = FileField(label='Vorschaubild', validators=[Regexp(regex, 'Eine ungültige Bild-Datei wurde ausgewählt! (jpg|png|jpeg)')])
-    regex = re.compile('^[\d]{1,3}.[\d]+$')
-    errorMsg = 'Es dürfen nur Zahlen und ein Punkt angegeben werden (12.123123123).'
-    longitude = StringField('Längengrad', validators=[DataRequired(), Regexp(regex, message=errorMsg)])
-    latitude = StringField('Breitengrad', validators=[DataRequired(), Regexp(regex, message=errorMsg)])
+    previewImage = FileField(label='Vorschaubild', name='highlightPreviewImage', validators=[Regexp(regex, 'Eine ungültige Bild-Datei wurde ausgewählt! (jpg|png|jpeg)'), DataRequired()])
     creator = StringField('Ersteller', default=current_user)
 
     submit = SubmitField('Neues Highlight hinzufügen')
@@ -53,7 +49,7 @@ class AddHighlightForm(FlaskForm):
 
 class AddRouteImageForm(FlaskForm):
     regex = re.compile('^[\w]+\.(jpg|png|jpeg|JPG|JPEG|PNG)$')
-    image = FileField(label='Routenbild', validators=[Regexp(regex, 'Eine ungültige Bild-Datei wurde ausgewählt! (jpg|png|jpeg)')])
+    image = FileField(label='Routenbild', name='routeImage', validators=[Regexp(regex, 'Eine ungültige Bild-Datei wurde ausgewählt! (jpg|png|jpeg)'), DataRequired()])
     routeId = StringField()
     creator = StringField(default=current_user)
 
@@ -65,15 +61,11 @@ class AddRouteImageForm(FlaskForm):
 
 class AddHighlightImageForm(FlaskForm):
     regex = re.compile('^[\w]+\.(jpg|png|jpeg|JPG|JPEG|PNG)$')
-    image = FileField(label='Bild', validators=[Regexp(regex, 'Eine ungültige Bild-Datei wurde ausgewählt! (jpg|png|jpeg)')])
+    image = FileField(label='Bild', validators=[Regexp(regex, 'Eine ungültige Bild-Datei wurde ausgewählt! (jpg|png|jpeg)'), DataRequired()])
     submit = SubmitField('Bild hinzufügen')
 
     def validate(self, extra_validators=None):
         return super().validate(extra_validators)
-
-
-
-# TODO: Reviews and Tags (postponed)
 
 
 class LoginForm(FlaskForm):

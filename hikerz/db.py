@@ -57,13 +57,13 @@ class Route(db.Model):
     previewImage = db.Column(db.String(255), nullable=False, default='PathToDefaultImage')
     technicalDifficulty = db.Column(db.Integer(), nullable=True)
     stamina = db.Column(db.Integer(), nullable=True)
-    distance = db.Column(db.Integer(), nullable=False) # distance in meters
-    duration = db.Column(db.Integer(), nullable=True) # could be calculated from the length of the trail and the average hiking speed
+    distance = db.Column(db.Integer(), nullable=False) # is read from gpx
+    duration = db.Column(db.Integer(), nullable=True)
     longitude = db.Column(db.String(15), nullable=False)
     latitude = db.Column(db.String(15), nullable=False)
     creator = db.Column(db.String(45), db.ForeignKey('User.username'))
     creatorRelationship = db.relationship('User', back_populates='creatorOfRoute')
-    highlightInRoute = db.relationship('HighlightInRoute', back_populates='route')
+    routeHighlight = db.relationship('Highlight', back_populates='route')
     routeImage = db.relationship('RouteImage', back_populates='route')
     tagOfRoute = db.relationship('TagOfRoute', back_populates='route')
     review = db.relationship('Review', back_populates='route')
@@ -120,49 +120,27 @@ class Highlight(db.Model):
     name = db.Column(db.String(45), nullable=False, default='Neues Highlight')
     description = db.Column(db.String(1024), nullable=True)
     previewImage = db.Column(db.String(255), nullable=False, default='PathToDefaultImage')
-    latitude =  db.Column(db.String(15), nullable=False)
-    longitude = db.Column(db.String(15), nullable=False)
     creator = db.Column(db.String(45), db.ForeignKey('User.username'))
+    routeId = db.Column(db.Integer(), db.ForeignKey('Route.id'))
+    route = db.relationship('Route', back_populates='routeHighlight')
     creatorRelationship = db.relationship('User', back_populates='creatorOfHighlight')
-    highlightInRoute = db.relationship('HighlightInRoute', back_populates='highlight')
     highlightImage = db.relationship('HighlightImage', back_populates='highlight')
 
-    def __init__(self, name, description, previewImage, latitude, longitude, creator) -> None:
+    def __init__(self, name, description, previewImage, creator, routeId) -> None:
         super().__init__()
         self.name = name
         self.description = description
         self.previewImage = previewImage
-        self.latitude = latitude
-        self.longitude = longitude
         self.creator = creator
+        self.routeId = routeId
 
     def __repr__(self) -> str:
         return f'<Highlight \
             "name" {self.name}, \
             "description" {self.description}, \
             "previewImage" {self.previewImage}, \
-            "latitude" {self.latitude}, \
-            "longitude" {self.longitude}, \
-            "creator" {self.creator}>'
-
-class HighlightInRoute(db.Model):
-    __tablename__ = 'HighlightInRoute'
-
-    id = db.Column(db.Integer(), primary_key=True)
-    routeId = db.Column(db.Integer(), db.ForeignKey('Route.id'))
-    highlightId = db.Column(db.Integer(), db.ForeignKey('Highlight.id'))
-    route = db.relationship('Route', back_populates='highlightInRoute')
-    highlight = db.relationship('Highlight', back_populates='highlightInRoute')
-
-    def __init__(self, routeId, highlightId) -> None:
-        super().__init__()
-        self.routeId = routeId
-        self.highlightId = highlightId
-
-    def __repr__(self) -> str:
-        return f'<HighlightInRoute \
-            "routeId" {self.routeId}, \
-            "highlightId" {self.highlightId}>'
+            "creator" {self.creator}, \
+            "routeId" {self.routeId}>'
 
 
 class RouteImage(db.Model):
@@ -232,7 +210,7 @@ class Review(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     topic = db.Column(db.String(45), nullable=False)
     review = db.Column(db.String(1024), nullable=False)
-    rating = db.Column(db.Integer(), nullable=False) # 1-10
+    rating = db.Column(db.Integer(), nullable=False) # 1-5
     helpful = db.Column(db.Integer(), nullable=False) # count of up-/downvotes
     creator = db.Column(db.String(45), db.ForeignKey('User.username'))
     routeId = db.Column(db.Integer(), db.ForeignKey('Route.id'))

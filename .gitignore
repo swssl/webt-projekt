@@ -131,3 +131,6 @@ dmypy.json
 # Custom
 .DS_Store
 *.code-workspace
+static/
+node_modules/
+package-lock.json

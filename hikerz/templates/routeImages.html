@@ -10,7 +10,7 @@
 
         <div class="row mt-2 mb-2">
             <div class="col">
-                <form method="post">
+                <form action="/routeDetails/{{ route.id }}" method="post" enctype="multipart/form-data">
                     {{routeImageForm.csrf_token}}
 
                     <div class="row">
@@ -32,11 +32,21 @@
         </div>
 
         <div class="row">
-            {% for im in images %}
-                <div class="card col-lg-4 col-md-6 p-3 routeDetails_imageContainer">
-                    <img class="card-img" src="{{ im.image }}" alt="Routenbild">
+            {% if images|count > 0 %}
+                {% for im in images %}
+                    <div class="card col-lg-4 col-md-6 p-3 routeDetails_imageContainer">
+                        <img class="card-img" src="{{ im.image }}" alt="Routenbild">
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if images|count == 0 %}
+                <div>
+                    <p>
+                        Für diese Route wurden noch keine Bilder hinzugefügt.
+                    </p>
                 </div>
-            {% endfor %}
+            {% endif %}
         </div>
     </div>
 

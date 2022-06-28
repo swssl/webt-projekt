@@ -14,6 +14,30 @@
                 <ul class="nav justify-content-center border-bottom align-middle">
     
                     <li class="nav-item mx-4 routeDetails_navButton">
+                        {% if route.creator == current_user.username %}
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteRouteModal{{ route.id }}" data-toggle="tooltip" data-placement="top" title="Route löschen"><i class="fa fa-trash"></i></button>
+                        {% endif %}
+
+                        <div class="modal" id="deleteRouteModal{{ route.id }}">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Route löschen</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Möchten Sie die Route '{{ route.name }}' endgültig löschen?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" onclick="window.location.href = '/deleteRoute//{{ route.id }}';">Löschen</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item mx-4 routeDetails_navButton">
                         <button class="btn float-start" onclick='location.href="/routeDetails/{{ route.id }}/highlights"' role="button">
                             Highlights
                         </button>
@@ -25,6 +49,7 @@
                         </button>
                     </li>
 
+
                     <!--REVIEWS POSTPONED-->
                     {% if False %}
                         <li class="nav-item mx-4 routeDetails_navButton">
@@ -33,8 +58,6 @@
                             </button>
                         </li>
 
-
-                        <!--TODO: if user is logged in (and is not creator) -> allow reviewing/rating-->
                         {%if current_user.is_authenticated() and current_user.username != route.creator %}
                             <li class="nav-item mx-4 routeDetails_navButton">
                                 <button class="btn float-start" href="/routeReviewAdd" role="button">
@@ -49,7 +72,7 @@
 
     
         <!--Options to add route image if user is creator-->
-        {% if current_user.username == route.creator and False %}
+        {% if current_user.username == route.creator %}
             <div class="row">
                 <ul class="nav justify-content-center border-bottom align-middle mt-2 mb-2">
 
@@ -78,10 +101,82 @@
         {% endif %}
     
         <!--Contains routeDetails: highlights, highlightImages, routeImages, tags, ...-->
-        <div class="container-fluid">
-            {% block routeDetailsContent %}{% endblock %}
+        <div class="container">
+            <div class="row">
+                <div class='col' id="routeDetailsMapContainer"  style="height:400px; width:100%;"></div>
+            </div>
+            <div class="row mt-2">
+                <div class="col">
+                    <div class="container-fluid">
+                        {% block routeDetailsContent %}{% endblock %}
+                    </div>
+                </div>
+            </div>
         </div>
     
     </div>
 
+{% endblock %}
+
+{% block scripts %}
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+    <script>
+        // Get geojson-format from gpx-file
+        const converter = require("@tmcw/togeojson");
+        const fs = require("fs");
+        const DOMParser = require("xmldom").DOMParser;
+        const mapboxgl = require("mapbox-gl");
+        const geojsonCoords = require("@mapbox/geojson-coords")
+        
+        // read gpx-file and parse it
+        const parsedGPX = new DOMParser().parseFromString(
+            fs.readFileSync({{ route.trail }}, "utf8")
+        );
+        
+        // convert gpx to geojson
+        const geojson = converter.gpx(parsedGPX);
+
+        // get all coordinates from geojson
+        let coords = geojsonCoords(geojson);
+
+
+        // display the route on the map
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZXNpbW9uMzk4IiwiYSI6ImNsNHkyaTlhdjA2N3kzZnVscGE2amtnajkifQ.7vp1Y8vhYJHVE0QRh-kz7w'
+
+        const map = new mapboxgl.Map({
+            container: 'routeDetailsMapContainer',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [{{ route.longitude }}, {{ route.latitude }}], // center map on starting position of route
+            zoom: 12
+        });
+
+
+        map.on('load', () => {
+            map.addSource('route', {
+                'type': 'geojson',
+                'data': {
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates': coords
+                    }
+                }
+            });
+
+            map.addLayer({
+                'id': 'route',
+                'type': 'line',
+                'source': 'route',
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': '#F00F0F',
+                    'line-width': 8
+                }
+            });
+        });
+    </script>
 {% endblock %}
